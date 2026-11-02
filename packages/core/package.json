@@ -1,6 +1,27 @@
 {
   "name": "@lantun/core",
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Read any article aloud with word highlighting, plus reading aids for low vision, dyslexia and ADHD. One script, no backend.",
+  "keywords": [
+    "text-to-speech",
+    "tts",
+    "read-aloud",
+    "accessibility",
+    "a11y",
+    "dyslexia",
+    "reading",
+    "widget",
+    "speech-synthesis"
+  ],
+  "license": "MIT",
+  "author": "rizkianakbar",
+  "homepage": "https://github.com/rizkianakbar/lantun#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rizkianakbar/lantun.git",
+    "directory": "packages/core"
+  },
+  "bugs": "https://github.com/rizkianakbar/lantun/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -12,6 +33,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
