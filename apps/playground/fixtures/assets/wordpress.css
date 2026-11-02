@@ -1,0 +1,32 @@
+/* Approximates a classic WordPress theme (header, single post, sidebar widgets, comments). */
+body { margin: 0; font: 17px/1.7 Georgia, "Times New Roman", serif; color: #2b2b2b; background: #fafafa; }
+a { color: #b5442b; }
+.site-header { background: #fff; border-bottom: 1px solid #e5e5e5; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.site-title { font: 700 1.4rem/1 system-ui, sans-serif; margin: 0; }
+.site-title a { color: inherit; text-decoration: none; }
+.main-navigation ul { list-style: none; display: flex; gap: 1.2rem; margin: 0; padding: 0; font: 600 .9rem system-ui, sans-serif; text-transform: uppercase; }
+.main-navigation a { color: #444; text-decoration: none; }
+.site-content { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 3rem; max-width: 1100px; margin: 2rem auto; padding: 0 2rem; }
+@media (max-width: 860px) { .site-content { grid-template-columns: 1fr; } }
+.post { background: #fff; padding: 2rem 2.5rem; border-radius: 4px; }
+.entry-title { font: 700 2.2rem/1.2 system-ui, sans-serif; margin: 0 0 .5rem; }
+.entry-meta, .entry-footer { font: .85rem system-ui, sans-serif; color: #777; }
+.entry-content h2 { font: 700 1.4rem/1.3 system-ui, sans-serif; margin-top: 2rem; }
+.wp-block-image { margin: 1.5rem 0; }
+.wp-block-image .placeholder { aspect-ratio: 16/9; background: linear-gradient(135deg, #d9c7a8, #a98e6a); border-radius: 3px; }
+.wp-block-image figcaption { font: italic .85rem system-ui, sans-serif; color: #777; text-align: center; margin-top: .4rem; }
+.wp-block-quote { border-left: 4px solid #b5442b; margin: 1.5rem 0; padding: .2rem 1.2rem; font-style: italic; }
+.wp-block-code { background: #272822; color: #f8f8f2; padding: 1rem; border-radius: 4px; overflow-x: auto; font: .85rem/1.5 ui-monospace, monospace; }
+.toc { background: #f3efe8; padding: 1rem 1.5rem; border-radius: 4px; font: .9rem system-ui, sans-serif; }
+.recipe-card { border: 2px dashed #d0c4b0; padding: 1rem 1.5rem; margin: 2rem 0; font-family: system-ui, sans-serif; }
+.sharedaddy { margin-top: 2rem; font: .85rem system-ui, sans-serif; display: flex; gap: .5rem; }
+.sharedaddy a { background: #eee; padding: .3rem .7rem; border-radius: 3px; text-decoration: none; color: #333; }
+.comments-area { background: #fff; margin-top: 2rem; padding: 1.5rem 2.5rem; font-size: .95rem; }
+.comment { border-top: 1px solid #eee; padding: 1rem 0; }
+.comment-author { font: 700 .9rem system-ui, sans-serif; }
+.widget-area .widget { background: #fff; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; font: .9rem/1.6 system-ui, sans-serif; }
+.widget-title { font-size: 1rem; margin: 0 0 .7rem; text-transform: uppercase; letter-spacing: .05em; }
+.widget ul { padding-left: 1.1rem; margin: 0; }
+.site-footer { text-align: center; padding: 2rem; font: .8rem system-ui, sans-serif; color: #888; }
+.cookie-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #222; color: #eee; font: .85rem system-ui, sans-serif; padding: .8rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 9999; }
+.cookie-bar button { background: #b5442b; color: #fff; border: 0; padding: .4rem 1rem; border-radius: 3px; }

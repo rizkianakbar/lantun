@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Body Text Is Probably Too Small – Pixel Notes</title>
+  <link rel="stylesheet" href="./assets/wordpress.css" />
+</head>
+<body class="post-template-default single single-post">
+  <header class="site-header">
+    <p class="site-title"><a href="#">Pixel Notes</a></p>
+    <nav class="main-navigation" aria-label="Primary">
+      <ul><li><a href="#">CSS</a></li><li><a href="#">Accessibility</a></li><li><a href="#">Newsletter</a></li></ul>
+    </nav>
+  </header>
+
+  <div id="content" class="site-content">
+    <main id="main" class="site-main">
+      <article class="post type-post status-publish">
+        <header class="entry-header">
+          <h1 class="entry-title">Your Body Text Is Probably Too Small</h1>
+          <div class="entry-meta"><time datetime="2026-05-20">May 20, 2026</time> by <a href="#">Dev Patel</a></div>
+        </header>
+
+        <div class="entry-content">
+          <p>Open any ten blogs and you will find body text set somewhere between 14 and 16 pixels. On a phone held at arm's length, or a laptop on a desk, that is often too small for comfortable reading. The fix is simple, and it takes about three lines of CSS.</p>
+
+          <h2>Start from the reader's setting</h2>
+          <p>Browsers ship with a default font size, usually 16px, and readers can change it. If you set <code>html { font-size: 62.5% }</code> to make the maths easier, you quietly throw that preference away. Use <code>rem</code> for type, and leave the root alone.</p>
+
+          <pre class="wp-block-code"><code>html { font-size: 100%; }
+body { font-size: 1.125rem; line-height: 1.6; }
+p, li { max-width: 68ch; }</code></pre>
+
+          <p>That gives 18px body text for most people, a line height that leaves room for ascenders and descenders, and a line length that keeps the eye from getting lost on wide screens.</p>
+
+          <h2>Test it the boring way</h2>
+          <p>Zoom your page to 200% and see what breaks. Then set your browser's default font size to "very large" and do it again. WCAG asks that text can be resized up to 200% without loss of content or function, e.g. no clipped buttons, no overlapping columns.</p>
+          <p>It is also worth reading your article on an actual phone, outdoors, in daylight. You will learn more in five minutes than in an hour of tweaking values in dev tools.</p>
+
+          <h2>What about line height?</h2>
+          <p>A line height of around 1.5 is a sensible default for body copy. Headings can go tighter, around 1.2, because they are short and set larger. And never set line height in pixels: it will not scale when the reader enlarges the text.</p>
+          <p>None of this is new. But it keeps coming up, so it seemed worth writing down one more time.</p>
+        </div>
+      </article>
+
+      <section id="comments" class="comments-area">
+        <h2 class="comments-title">Leave a reply</h2>
+        <form><label>Comment<br><textarea rows="4" cols="40"></textarea></label><p><button type="button">Post comment</button></p></form>
+      </section>
+    </main>
+
+    <aside id="secondary" class="widget-area">
+      <section class="widget"><h2 class="widget-title">Tags</h2><p><a href="#">css</a> <a href="#">typography</a> <a href="#">wcag</a></p></section>
+    </aside>
+  </div>
+
+  <footer class="site-footer">© 2026 Pixel Notes</footer>
+  <script type="module" src="/src/inject.ts" data-lantun data-content-selector="article .entry-content" data-exclude-selectors="pre, code"></script>
+</body>
+</html>

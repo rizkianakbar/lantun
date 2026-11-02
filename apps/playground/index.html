@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Reader playground</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #17171a;
+        --muted: #6b6b76;
+        --line: #e7e5e0;
+        --bg: #faf9f6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          16px/1.55 ui-sans-serif,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      main {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 56px 20px 80px;
+      }
+      h1 {
+        font-size: 30px;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+      }
+      .lede {
+        color: var(--muted);
+        margin: 0 0 40px;
+        max-width: 60ch;
+      }
+      h2 {
+        font-size: 12px;
+        font-weight: 650;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 36px 0 10px;
+      }
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-top: 1px solid var(--line);
+      }
+      li a {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 13px 2px;
+        border-bottom: 1px solid var(--line);
+        color: inherit;
+        text-decoration: none;
+      }
+      li a:hover .name {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      .tag {
+        font-size: 13px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .card {
+        margin-top: 44px;
+        padding: 20px 22px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+      }
+      .card h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+      }
+      .card p {
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 14.5px;
+      }
+      .bm {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: grab;
+      }
+      code {
+        font:
+          13px ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        background: #f0eee9;
+        padding: 2px 6px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Reader playground</h1>
+      <p class="lede">
+        Article pages that copy real WordPress and news-portal layouts, with
+        original sample text. Each one loads the widget the way a publisher
+        would, configured by <code>data-*</code> attributes. Edits to
+        <code>packages/core</code> hot-reload here.
+      </p>
+      <h2>Bahasa Indonesia</h2>
+      <ul id="id"></ul>
+      <h2>English</h2>
+      <ul id="en"></ul>
+      <h2>Stress tests</h2>
+      <ul id="hostile"></ul>
+
+      <section class="card">
+        <h3>Try it on any live site</h3>
+        <p>
+          Run
+          <code>pnpm --filter cdn build &amp;&amp; pnpm --filter cdn serve</code
+          >, then drag this to your bookmarks bar and click it on any article.
+          It injects the production <code>widget.js</code>; clicking again
+          reloads it.
+        </p>
+        <a class="bm" id="bookmarklet" href="#">Read aloud ▸</a>
+      </section>
+      <section class="card">
+        <h3>Debugging</h3>
+        <p>
+          <code>localStorage.setItem('lantun:debug', '1')</code> logs which
+          voices fire no word boundaries (and get estimated timing).
+          <code>window.LantunReader</code> is the public API.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="/src/index.ts"></script>
+  </body>
+</html>

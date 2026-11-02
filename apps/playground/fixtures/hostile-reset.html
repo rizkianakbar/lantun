@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hostile CSS fixture</title>
+  <style>
+    /* Worst-case host styles: the widget's Shadow DOM UI must survive all of these. */
+    * { all: unset; }
+    html, body, div, p, h1, article, header, main { display: block; }
+    body { font-family: "Comic Sans MS", cursive; padding: 2rem; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    p { margin-bottom: 1rem; }
+    button, [role="button"] { background: hotpink !important; font-size: 40px !important; }
+    svg { width: 300px !important; height: 300px !important; fill: lime !important; }
+    div { box-sizing: content-box !important; border: 1px dotted red; }
+    :host, :root { --color: red; }
+    * { transition: all 3s !important; }
+    body > * { position: relative !important; z-index: 2147483647 !important; }
+    style, script, head, title, meta, link { display: none; }
+  </style>
+</head>
+<body>
+  <article>
+    <header><h1>A page with very aggressive global styles</h1></header>
+    <main>
+      <p>This page resets every element with <em>all: unset</em>, forces huge pink buttons and lime SVGs, and pins its own elements to the maximum z-index. A well-isolated widget should still look and behave exactly as it does everywhere else.</p>
+      <p>It should also still find this article, split it into sentences, and highlight words as they are read aloud. If you can read this sentence with a soft highlight behind it, the highlighting survived too.</p>
+    </main>
+  </article>
+  <script type="module" src="/src/inject.ts" data-lantun data-content-selector="article"></script>
+</body>
+</html>
