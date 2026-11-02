@@ -1,6 +1,7 @@
 import { useRef } from "preact/hooks";
 import { MASK_BAND } from "./ui.constants";
 import { usePointerY } from "./ui.hooks";
+import { viewport } from "./ui.lib";
 
 export function ReadingGuide() {
   const ref = useRef<HTMLDivElement>(null);
@@ -18,7 +19,7 @@ export function ReadingMask() {
 
   // Both shades are viewport-tall and only translated: no layout work per frame.
   usePointerY((y) => {
-    if (top.current) top.current.style.transform = `translateY(${y - MASK_BAND - window.innerHeight}px)`;
+    if (top.current) top.current.style.transform = `translateY(${y - MASK_BAND - viewport().height}px)`;
     if (bottom.current) bottom.current.style.transform = `translateY(${y + MASK_BAND}px)`;
   });
 

@@ -35,10 +35,17 @@ export function prefersReducedMotion(): boolean {
   return typeof matchMedia !== "function" || matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+// The visible area, without classic scrollbars: window.innerWidth includes them, so a dock placed
+// by it sits under the page scrollbar. jsdom reports 0 client sizes, hence the fallback.
+export function viewport(): { width: number; height: number } {
+  const root = document.documentElement;
+
+  return { width: root.clientWidth || window.innerWidth, height: root.clientHeight || window.innerHeight };
+}
+
 // Centre at (x, y) as viewport fractions, kept fully on screen whatever the dock's size.
 export function placeDock(el: HTMLElement, x: number, y: number): void {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
+  const { width: vw, height: vh } = viewport();
   const w = el.offsetWidth;
   const h = el.offsetHeight;
 

@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import type { Store } from "../lib/store";
 import type { ReaderState } from "../reader/reader.types";
 import { EDGE, GAP } from "./ui.constants";
-import { clamp, dropDock, layoutBox, offsetIn, placeDock, prefersReducedMotion } from "./ui.lib";
+import { clamp, dropDock, layoutBox, offsetIn, placeDock, prefersReducedMotion, viewport } from "./ui.lib";
 import type { DockPlace, ElementRef, Orientation, Presence } from "./ui.types";
 
 export function useStore<T extends object>(store: Store<T>): T {
@@ -49,7 +49,7 @@ export function usePointerY(apply: (y: number) => void): void {
 
   useEffect(() => {
     let frame = 0;
-    let y = window.innerHeight / 2;
+    let y = viewport().height / 2;
 
     function flush(): void {
       frame = 0;
@@ -136,8 +136,7 @@ export function useAnchor(panel: ElementRef, anchor: ElementRef): void {
 
     if (!el || !a) return;
 
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    const { width: vw, height: vh } = viewport();
     // Layout boxes, not getBoundingClientRect(): mid-animation the dock is scaled and shifted.
     const dockEl = (a.closest(".dock") ?? a) as HTMLElement;
     const dock = layoutBox(dockEl);
@@ -221,7 +220,9 @@ export function useDrag(
     function move(ev: PointerEvent): void {
       cx = ev.clientX + dx;
       cy = ev.clientY + dy;
-      placeDock(el as HTMLElement, cx / window.innerWidth, cy / window.innerHeight);
+      const { width, height } = viewport();
+
+      placeDock(el as HTMLElement, cx / width, cy / height);
     }
 
     function up(): void {
@@ -229,7 +230,9 @@ export function useDrag(
       handle.removeEventListener("pointerup", up);
       handle.removeEventListener("pointercancel", up);
       delete (el as HTMLElement).dataset.drag;
-      latest.current.onEnd(dropDock(cx, cy, latest.current.o, window.innerWidth, window.innerHeight));
+      const { width, height } = viewport();
+
+      latest.current.onEnd(dropDock(cx, cy, latest.current.o, width, height));
     }
 
     handle.setPointerCapture?.(e.pointerId);

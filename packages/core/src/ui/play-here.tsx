@@ -3,7 +3,7 @@ import type { Reader } from "../reader/reader.types";
 import { PlayIcon } from "./icons";
 import { PLAY_HERE_HIDE_MS, PLAY_HERE_MAX_DISTANCE, PLAY_HERE_SIZE, SELECTION_SETTLE_MS } from "./ui.constants";
 import type { Strings } from "./ui.i18n";
-import { sameSpot } from "./ui.lib";
+import { sameSpot, viewport } from "./ui.lib";
 import type { Spot } from "./ui.types";
 
 export type PlayHereProps = {
@@ -24,10 +24,12 @@ function selectionSpot(reader: Reader): Spot | null {
 
   if (!rect) return null;
 
+  const { width, height } = viewport();
+
   return {
     index,
-    x: Math.min(Math.max(8, rect.left), window.innerWidth - 180),
-    y: Math.min(rect.bottom + 10, window.innerHeight - 110),
+    x: Math.min(Math.max(8, rect.left), width - 180),
+    y: Math.min(rect.bottom + 10, height - 110),
   };
 }
 

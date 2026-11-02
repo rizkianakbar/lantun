@@ -113,8 +113,8 @@ export const UI_CSS = `
    toward the dock. */
 .pop,.toast{position:fixed;top:var(--top,50%);left:var(--left,auto);animation:lt-pop .22s var(--ease) both}
 .pop[data-leave],.toast[data-leave]{animation:lt-pop-out .14s var(--out) both;pointer-events:none}
-.pop{width:min(320px,calc(100vw - 24px));max-height:calc(100vh - 24px);border-radius:20px;display:flex;flex-direction:column}
-.speedpop{width:min(300px,calc(100vw - 24px));padding:16px 16px 14px}
+.pop{width:min(320px,calc(100% - 24px));max-height:calc(100% - 24px);border-radius:20px;display:flex;flex-direction:column}
+.speedpop{width:min(300px,calc(100% - 24px));padding:16px 16px 14px}
 .label{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;font-weight:600;color:var(--mu);margin-bottom:8px}
 .label b{font-size:15px;font-weight:650;color:var(--tx);font-variant-numeric:tabular-nums}
 .stepper{display:flex;align-items:center;gap:8px}
@@ -153,7 +153,7 @@ export const UI_CSS = `
 .tip{margin:6px;padding:10px 12px;border-radius:12px;background:var(--bg2)}
 
 /* Accessibility panel */
-.panel{width:min(368px,calc(100vw - 24px))}
+.panel{width:min(368px,calc(100% - 24px))}
 .phead{display:flex;align-items:center;gap:4px;padding:12px 10px 4px 18px}
 .phead h2{flex:1;font-size:16px;font-weight:650;letter-spacing:-.01em}
 .reset{height:30px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:600;color:var(--a)}
@@ -214,7 +214,7 @@ export const UI_CSS = `
 .toggle[aria-checked=true] .knobs::after{transform:translateX(14px)}
 
 /* Toast beside the dock (placed like a popover) */
-.toast{max-width:min(340px,calc(100vw - 24px));display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:16px;font-size:13px;font-weight:500}
+.toast{max-width:min(340px,calc(100% - 24px));display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:16px;font-size:13px;font-weight:500}
 .toast span{flex:1;min-width:0}
 .btn{height:32px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap}
 .btn.primary{background:var(--a);color:var(--ai)}
@@ -235,7 +235,7 @@ export const UI_CSS = `
 
 /* Reading guide & mask */
 .guide{position:fixed;left:0;right:0;top:0;height:30px;margin-top:-15px;pointer-events:none;background:rgba(255,214,90,.16);border-top:2px solid rgba(240,180,0,.85);border-bottom:2px solid rgba(240,180,0,.85);will-change:transform}
-.shade{position:fixed;left:0;right:0;top:0;height:100vh;pointer-events:none;background:rgba(8,8,10,.66);will-change:transform}
+.shade{position:fixed;left:0;right:0;top:0;height:100%;pointer-events:none;background:rgba(8,8,10,.66);will-change:transform}
 
 @keyframes lt-in{from{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.96)}}
 @keyframes lt-out{to{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.96)}}
