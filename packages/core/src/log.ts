@@ -26,3 +26,9 @@ export function isDebug(): boolean {
     return false;
   }
 }
+
+export function debug(...args: unknown[]): void {
+  if (isDebug()) {
+    console.info("[Lantun]", ...args);
+  }
+}
