@@ -1,28 +1,13 @@
-import { ENDS_WITH_ABBREVIATION } from "./abbreviations";
+import {
+  CLAUSE,
+  ENDS_WITH_ABBREVIATION,
+  FALLBACK_SENTENCE,
+  FALLBACK_WORD,
+  MAX_SENTENCE_LENGTH,
+} from "./segment.constants";
+import type { SegmentOptions, Sentence, Span, Word } from "./segment.types";
 
-export interface Word {
-  start: number;
-  end: number;
-}
-
-// Offsets are into the TextMap string; slice it to get the text to speak.
-export interface Sentence {
-  start: number;
-  end: number;
-  words: Word[];
-}
-
-export interface SegmentOptions {
-  // Longer sentences are split at clause punctuation: Chrome's network voices are reported to stop
-  // after ~15 s of continuous speech, and 200 characters is roughly 13 s at 1x.
-  maxLength?: number;
-  native?: boolean;
-}
-
-type Span = [start: number, end: number];
-
-const hasSegmenter =
-  typeof Intl !== "undefined" && typeof Intl.Segmenter === "function";
+const hasSegmenter = typeof Intl !== "undefined" && typeof Intl.Segmenter === "function";
 
 function toLocale(lang: string): string {
   try {
@@ -32,19 +17,8 @@ function toLocale(lang: string): string {
   }
 }
 
-// Fallbacks for engines without Intl.Segmenter (Firefox < 125). Good enough for id/en.
-// A terminator directly followed by a letter or digit is not a break: "12.00", "Rp90.000", "e.g".
-const FALLBACK_SENTENCE =
-  /(?:[^.!?…\n]|[.!?…](?=[\p{L}\p{N}]))+(?:[.!?…]+["'”’)\]]*)?/gu;
-const FALLBACK_WORD =
-  /[\p{L}\p{N}](?:[\p{L}\p{N}\p{M}]|['’.-](?=[\p{L}\p{N}]))*/gu;
-const CLAUSE = /[,;:–—]/;
-
 function regexSpans(re: RegExp, text: string, offset = 0): Span[] {
-  return Array.from(text.matchAll(re), (m) => [
-    offset + (m.index ?? 0),
-    offset + (m.index ?? 0) + m[0].length,
-  ]);
+  return Array.from(text.matchAll(re), (m) => [offset + (m.index ?? 0), offset + (m.index ?? 0) + m[0].length]);
 }
 
 function trim(text: string, [s, e]: Span): Span {
@@ -71,15 +45,8 @@ function mergeAbbreviations(text: string, spans: Span[]): Span[] {
   return out;
 }
 
-// Splits an over-long sentence into balanced pieces: as many as needed, each close to an equal
-// share, cutting at clause punctuation when one is near. Greedy splitting would leave a lone
-// trailing word ("course.") that sounds robotic as its own utterance.
-function splitLong(
-  text: string,
-  [start, end]: Span,
-  words: Word[],
-  max: number,
-): Sentence[] {
+// Balanced pieces, cut at clause punctuation when near: greedy splitting leaves a lone trailing word.
+function splitLong(text: string, [start, end]: Span, words: Word[], max: number): Sentence[] {
   if (end - start <= max || words.length < 2) return [{ start, end, words }];
   const ideal = start + (end - start) / Math.ceil((end - start) / max);
   let cut = 0;
@@ -104,25 +71,14 @@ function splitLong(
   ];
 }
 
-export function segment(
-  text: string,
-  lang: string,
-  options: SegmentOptions = {},
-): Sentence[] {
-  const { maxLength = 200, native = hasSegmenter } = options;
+export function segment(text: string, lang: string, options: SegmentOptions = {}): Sentence[] {
+  const { maxLength = MAX_SENTENCE_LENGTH, native = hasSegmenter } = options;
   const locale = toLocale(lang);
-  const sentenceSeg = native
-    ? new Intl.Segmenter(locale, { granularity: "sentence" })
-    : null;
-  const wordSeg = native
-    ? new Intl.Segmenter(locale, { granularity: "word" })
-    : null;
+  const sentenceSeg = native ? new Intl.Segmenter(locale, { granularity: "sentence" }) : null;
+  const wordSeg = native ? new Intl.Segmenter(locale, { granularity: "word" }) : null;
 
   const raw: Span[] = sentenceSeg
-    ? Array.from(sentenceSeg.segment(text), (s) => [
-        s.index,
-        s.index + s.segment.length,
-      ])
+    ? Array.from(sentenceSeg.segment(text), (s) => [s.index, s.index + s.segment.length])
     : regexSpans(FALLBACK_SENTENCE, text);
 
   const spans = mergeAbbreviations(
@@ -130,20 +86,26 @@ export function segment(
     raw.map((s) => trim(text, s)).filter(([s, e]) => e > s),
   );
 
-  const wordsIn = ([s, e]: Span): Word[] => {
+  function wordsIn([s, e]: Span): Word[] {
     const slice = text.slice(s, e);
-    if (!wordSeg)
+
+    if (!wordSeg) {
       return regexSpans(FALLBACK_WORD, slice, s).map(([start, end]) => ({
         start,
         end,
       }));
-    const out: Word[] = [];
-    for (const w of wordSeg.segment(slice)) {
-      if (w.isWordLike)
-        out.push({ start: s + w.index, end: s + w.index + w.segment.length });
     }
+
+    const out: Word[] = [];
+
+    for (const w of wordSeg.segment(slice)) {
+      if (w.isWordLike) {
+        out.push({ start: s + w.index, end: s + w.index + w.segment.length });
+      }
+    }
+
     return out;
-  };
+  }
 
   // Sentences with no word-like content ("—", "***", a lone emoji) have nothing to speak.
   return spans.flatMap((span) => {
@@ -153,10 +115,7 @@ export function segment(
 }
 
 // Index of the sentence containing or following text index `i`, for "play from here".
-export function sentenceIndexAt(
-  sentences: readonly Sentence[],
-  i: number,
-): number {
+export function sentenceIndexAt(sentences: readonly Sentence[], i: number): number {
   let lo = 0;
   let hi = sentences.length;
   while (lo < hi) {
