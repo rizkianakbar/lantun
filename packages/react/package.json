@@ -1,6 +1,23 @@
 {
   "name": "@lantun/react",
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "React component for Lantun: read articles aloud with highlighting and reading aids.",
+  "keywords": [
+    "react",
+    "text-to-speech",
+    "read-aloud",
+    "accessibility",
+    "lantun"
+  ],
+  "license": "MIT",
+  "author": "rizkianakbar",
+  "homepage": "https://github.com/rizkianakbar/lantun#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rizkianakbar/lantun.git",
+    "directory": "packages/react"
+  },
+  "bugs": "https://github.com/rizkianakbar/lantun/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -12,13 +29,16 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
-    "@lantun/core": "workspace:*"
+    "@lantun/core": "workspace:^"
   },
   "peerDependencies": {
     "react": ">=17"

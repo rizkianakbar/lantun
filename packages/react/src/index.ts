@@ -3,10 +3,10 @@ import { useEffect } from "react";
 
 export { registerVoices } from "@lantun/core";
 
-export type ReaderWidgetProps = ReaderOptions;
+export type LantunWidgetProps = ReaderOptions;
 
 // Core is a page-level singleton, so the wrapper renders nothing and only owns its lifetime.
-export function ReaderWidget(props: ReaderWidgetProps): null {
+export function LantunWidget(props: LantunWidgetProps): null {
   const key = JSON.stringify(props);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: keyed on the serialised options, so equal props never re-init
