@@ -1,12 +1,17 @@
-import { applySavedAx, createAx, type AxController } from "./a11y/controller";
-import { createEmitter } from "./emitter";
-import { guard, warn } from "./log";
-import { resolveOptions } from "./options";
-import { createReader, type Reader } from "./reader";
-import type { VoiceEngine } from "./speech/types";
-import type { ReaderEvent, ReaderOptions, ResolvedOptions } from "./types";
-import { mountUI, type MountedUI } from "./ui/mount";
+import { applySavedAx, createAx } from "./a11y/a11y";
+import type { AxController } from "./a11y/a11y.types";
+import { createEmitter } from "./lib/emitter";
+import { guard, warn } from "./lib/log";
+import { resolveOptions } from "./options/options";
+import type { ReaderEvent, ReaderOptions, ResolvedOptions } from "./options/options.types";
+import { createReader } from "./reader/reader";
+import type { Reader } from "./reader/reader.types";
+import type { VoiceEngine } from "./speech/speech.types";
+import { type MountedUI, mountUI } from "./ui/mount";
 
+export { applySavedAx } from "./a11y/a11y";
+export { optionsFromDataset, resolveOptions } from "./options/options";
+export type { Position, ReaderEvent, ReaderOptions, Side } from "./options/options.types";
 export type {
   EngineStatus,
   SpeakHandlers,
@@ -15,46 +20,54 @@ export type {
   SpeechErrorInfo,
   Voice,
   VoiceEngine,
-} from "./speech/types";
-export type { Position, ReaderEvent, ReaderOptions, Side } from "./types";
-export { resolveOptions } from "./options";
-export { optionsFromDataset } from "./dataset";
-export { applySavedAx } from "./a11y/controller";
+} from "./speech/speech.types";
 
 let current: ResolvedOptions | null = null;
 let reader: Reader | null = null;
 let ax: AxController | null = null;
 let ui: MountedUI | null = null;
+
 const emitter = createEmitter<ReaderEvent>();
 // Add-on voice engines outlive init()/destroy(): register once, every later reader gets them.
 const engines: VoiceEngine[] = [];
 
-export const registerVoices = guard(
-  "registerVoices",
-  (engine: VoiceEngine): void => {
-    if (engines.some((e) => e.id === engine.id)) return;
-    engines.push(engine);
-    reader?.addEngine(engine);
-  },
-);
+function teardown(): void {
+  ui?.destroy();
+  reader?.destroy();
+  ax?.destroy();
+  ui = reader = ax = null;
+  current = null;
+}
 
-export const init = guard("init", (options?: ReaderOptions): void => {
+export const registerVoices = guard("registerVoices", function registerVoices(engine: VoiceEngine): void {
+  if (engines.some((e) => e.id === engine.id)) return;
+
+  engines.push(engine);
+  reader?.addEngine(engine);
+});
+
+export const init = guard("init", function init(options?: ReaderOptions) {
   if (current) {
     warn("init() called twice; call destroy() first. Ignoring.");
     return;
   }
+
   const opts = resolveOptions(options);
   current = opts;
+
   try {
     if (opts.features.a11y) {
       applySavedAx(document, opts.nonce);
       ax = createAx(document, opts.nonce);
     }
+
     if (opts.features.tts) {
-      const r = createReader(opts, emitter.emit);
-      reader = r;
-      engines.forEach((e) => r.addEngine(e));
+      const created = createReader(opts, emitter.emit);
+
+      reader = created;
+      for (const engine of engines) created.addEngine(engine);
     }
+
     if (reader || ax) ui = mountUI(document, opts, reader, ax);
   } catch (err) {
     // Half an init is worse than none: roll back so the page is untouched and init() can retry.
@@ -63,32 +76,25 @@ export const init = guard("init", (options?: ReaderOptions): void => {
   }
 });
 
-const teardown = (): void => {
-  ui?.destroy();
-  reader?.destroy();
-  ax?.destroy();
-  ui = reader = ax = null;
-  current = null;
-};
-
-export const destroy = guard("destroy", (): void => {
+export const destroy = guard("destroy", function destroy() {
   teardown();
   emitter.clear();
 });
 
-export const play = guard("play", (): void => {
+export const play = guard("play", function play() {
   if (!current) warn("play() called before init().");
   else if (!reader) warn("play() ignored: the tts feature is disabled.");
   else reader.play();
 });
 
-export const pause = guard("pause", (): void => {
+export const pause = guard("pause", function pause() {
   reader?.pause();
 });
 
-export const on = guard(
-  "on",
-  (event: ReaderEvent, cb: (payload: unknown) => void) => emitter.on(event, cb),
-);
+export const on = guard("on", function on(event: ReaderEvent, handler: (payload: unknown) => void) {
+  return emitter.on(event, handler);
+});
 
-export const isInitialized = (): boolean => current !== null;
+export function isInitialized(): boolean {
+  return current !== null;
+}
