@@ -12,18 +12,14 @@
     "test": "turbo run test",
     "e2e": "turbo run build --filter=cdn && pnpm --filter playground e2e",
     "size": "turbo run build --filter=cdn && pnpm --filter cdn size",
-    "lint": "eslint .",
+    "lint": "biome check .",
     "typecheck": "turbo run typecheck",
     "live-check": "turbo run build --filter=cdn && pnpm --filter playground live-check",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format": "biome check --write ."
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "eslint": "^10.14.0",
-    "prettier": "^3.9.10",
+    "@biomejs/biome": "^2.6.4",
     "turbo": "^2.11.10",
-    "typescript": "7.0.2",
-    "typescript-eslint": "^8.72.1"
+    "typescript": "7.0.2"
   }
 }
