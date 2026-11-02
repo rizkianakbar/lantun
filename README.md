@@ -1,159 +1,191 @@
-# Turborepo starter
+# Lantun
 
-This Turborepo starter is maintained by the Turborepo core team.
+**Turn any article into something people can listen to, and read more comfortably.**
 
-## Using this example
+One script tag adds a small dock to your site. Readers press play and hear the article, with each sentence and word highlighted as it is spoken. A second button opens reading aids for low vision, dyslexia, ADHD and more. No account, no backend, no changes to your markup.
 
-Run the following command:
+![Lantun reading an article aloud, highlighting the current sentence and word](docs/screenshots/playing.png)
 
-```sh
-npx create-turbo@latest
+```html
+<script src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/widget.js"></script>
 ```
 
-## What's inside?
+## Why Lantun
 
-This Turborepo includes the following packages/apps:
+- **Finds the article by itself.** It skips menus, ads, captions, code blocks and "Read also" links, so readers hear the story and nothing else.
+- **Follows along as it reads.** The current sentence and word are highlighted, and the page scrolls gently with them.
+- **Starts wherever you want.** Hover a paragraph or select some text, then press play to start there.
+- **Picks up where you left off.** Come back to a half-read article and it continues from the same sentence.
+- **Uses the best voice available.** It ranks the browser's voices, so neural voices come first and robotic or novelty ones are left out. Lifelike voices are an optional add-on.
+- **Helps people read, not just listen.** Twelve reading aids and five one-tap profiles.
+- **Won't break your site.** The UI lives in its own shadow root and never touches your article. It survives hostile CSS and strict Content-Security-Policies, and it can't throw errors into your page.
+- **Light.** About 38 kB gzipped, with no dependencies on your side.
+- **Accessible.** Fully keyboard-operable, screen-reader friendly, and checked with axe in every state.
+- **Bilingual UI.** English and Indonesian, chosen from the page language.
 
-### Apps and Packages
+## A closer look
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/dock.png" alt="The idle dock on the right edge, showing a 2 minute listening time"></td>
+    <td width="50%"><img src="docs/screenshots/voice.png" alt="The voice picker with lifelike and built-in voices"></td>
+  </tr>
+  <tr>
+    <td><b>Quiet until needed.</b> A slim dock shows how long the article takes to hear. Drag it to any edge, or tuck it away.</td>
+    <td><b>Lifelike voices.</b> Natural English voices generated on the reader's device. They download once (31 MB) and only when a reader picks one.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/accessibility.png" alt="The reading aids panel with the Dyslexia profile on"></td>
+    <td><img src="docs/screenshots/dark-mode.png" alt="An article in dark mode with the highlight still in the brand colour"></td>
+  </tr>
+  <tr>
+    <td><b>Reading aids.</b> Text size, line height, letter spacing, readable and dyslexia fonts, colour modes, grayscale, highlighted links, big cursor, reading guide and mask, paused animations, hidden images.</td>
+    <td><b>Any page, any colour mode.</b> Dark, light, high-contrast and inverted modes, with highlights that keep your brand colour.</td>
+  </tr>
+</table>
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Install
 
-### Utilities
+Pick whichever fits your site. All three give readers the same widget.
 
-This Turborepo has some additional tools already setup for you:
+| Your site                                    | Use                         | Package                                                        |
+| -------------------------------------------- | --------------------------- | -------------------------------------------------------------- |
+| Any HTML page, WordPress, Ghost, a CMS theme | One `<script>` tag          | [`lantun`](https://www.npmjs.com/package/lantun)               |
+| A JavaScript app with a bundler              | `npm install @lantun/core`  | [`@lantun/core`](https://www.npmjs.com/package/@lantun/core)   |
+| A React app                                  | `npm install @lantun/react` | [`@lantun/react`](https://www.npmjs.com/package/@lantun/react) |
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+Lifelike voices are a separate, optional add-on: [`@lantun/voice-kitten`](https://www.npmjs.com/package/@lantun/voice-kitten), or `voice-kitten.js` for the script tag.
 
-### Build
+### 1. Script tag (no build step)
 
-To build all apps and packages, run the following command:
+Paste this before `</body>`, or in `<head>`:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```html
+<script src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/widget.js"></script>
 ```
 
-Without global `turbo`, use your package manager:
+That's all. Lantun starts when the page loads, finds the article and shows the dock. To add lifelike voices, load the add-on too, before or after the widget:
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm exec turbo build
-pnpm exec turbo build
+```html
+<script src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/voice-kitten.js"></script>
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+`@0.1` gets bug fixes automatically but never a breaking change. Pin an exact version (`lantun@0.1.0`) if you want nothing to change, or self-host the two files from the [`lantun`](https://www.npmjs.com/package/lantun) package.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Configure it with attributes on the same tag. Every option is optional:
 
-```sh
-turbo build --filter=docs
+```html
+<script
+  src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/widget.js"
+  data-content-selector="article .entry-content"
+  data-color="#7c3aed"
+  data-lang="en"
+></script>
 ```
 
-Without global `turbo`:
+| Attribute                | Default                  | What it does                                            |
+| ------------------------ | ------------------------ | ------------------------------------------------------- |
+| `data-content-selector`  | auto-detected            | Where the article body is.                              |
+| `data-exclude-selectors` | none                     | Comma-separated selectors that are never read aloud.    |
+| `data-position`          | `right`                  | Dock side: `right` or `left`.                           |
+| `data-color`             | `#f5b841`                | Highlight and accent colour; any CSS colour.            |
+| `data-lang`              | `<html lang>`, then `en` | Article language; picks the voices and the UI language. |
+| `data-tts`               | `true`                   | `false` turns off listening.                            |
+| `data-a11y`              | `true`                   | `false` turns off reading aids.                         |
+| `data-z-index`           | `2147483000`             | Stacking order.                                         |
+| `data-auto-init`         | `true`                   | `false` waits for you to call `LantunReader.init()`.    |
+
+On a page with a strict CSP, add a `nonce` to the script tag and Lantun reuses it for its styles. Returning readers get their saved reading aids before the first paint.
+
+To keep something out of the reading, add `data-reader-skip` to it.
+
+### 2. npm
 
 ```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+npm install @lantun/core
 ```
 
-### Develop
+```ts
+import { init } from "@lantun/core";
 
-To develop all apps and packages, run the following command:
+init({ contentSelector: "article", color: "#7c3aed" });
+```
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Call `init()` once the article is in the page. On a single-page app, Lantun notices when the article is replaced and re-reads the new one. Call `destroy()` to remove it completely.
+
+With lifelike voices:
 
 ```sh
-cd my-turborepo
-turbo dev
+npm install @lantun/core @lantun/voice-kitten
 ```
 
-Without global `turbo`, use your package manager:
+```ts
+import { init, registerVoices } from "@lantun/core";
+import { kittenVoices } from "@lantun/voice-kitten";
+
+registerVoices(kittenVoices());
+init();
+```
+
+### 3. React
 
 ```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
+npm install @lantun/react
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+```tsx
+import { LantunWidget } from "@lantun/react";
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+export function ArticlePage() {
+  return (
+    <>
+      <article>…</article>
+      <LantunWidget contentSelector="article" color="#7c3aed" />
+    </>
+  );
+}
+```
+
+`<LantunWidget />` takes the same options as `init()`, renders nothing itself, and removes the widget when it unmounts.
+
+## API
+
+| Function                 | Description                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `init(options?)`         | Starts the widget. Options mirror the attributes above, in camelCase.        |
+| `destroy()`              | Removes everything Lantun added to the page.                                 |
+| `play()` / `pause()`     | Controls playback. Browsers allow `play()` only after a user interaction.    |
+| `on(event, handler)`     | Listens to `sentence`, `word`, `end` or `error`, and returns an unsubscribe. |
+| `registerVoices(engine)` | Adds an add-on voice engine, such as `kittenVoices()`.                       |
+
+The script tag exposes the same functions on `window.LantunReader`. Turn on debug logs with `localStorage.setItem("lantun:debug", "1")`.
+
+## Development
 
 ```sh
-turbo dev --filter=web
+pnpm install
+pnpm dev         # playground with real article layouts at http://localhost:5173
+pnpm test        # unit tests
+pnpm e2e         # browser tests in Chromium and WebKit
+pnpm lint        # Biome: format, sorted imports, unused code
+pnpm size        # bundle budgets: widget 40 kB, voices 8 kB gzipped
+pnpm build
 ```
 
-Without global `turbo`:
+| Package                 | Contents                                                           |
+| ----------------------- | ------------------------------------------------------------------ |
+| `packages/core`         | The widget: extraction, speech, highlighting, reading aids and UI. |
+| `packages/voice-kitten` | On-device Kitten TTS voices, synthesised in a web worker.          |
+| `packages/react`        | The `<LantunWidget />` wrapper.                                    |
+| `apps/cdn`              | The `lantun` package: `widget.js` and `voice-kitten.js`.           |
+| `apps/playground`       | Demo pages and end-to-end tests.                                   |
+
+Requires Node 24 and pnpm.
+
+### Releasing
+
+Bump the `version` in each package (`packages/core`, `packages/react`, `packages/voice-kitten`, `apps/cdn`), then:
 
 ```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+pnpm release   # builds, runs the tests, then publishes all four packages
 ```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)

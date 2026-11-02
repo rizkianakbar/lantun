@@ -19,14 +19,13 @@ importers:
         version: 7.0.2
 
   apps/cdn:
-    dependencies:
+    devDependencies:
       '@lantun/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/core
       '@lantun/voice-kitten':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/voice-kitten
-    devDependencies:
       '@size-limit/file':
         specifier: ^14.3.0
         version: 14.3.0(size-limit@14.3.0)
@@ -87,7 +86,7 @@ importers:
   packages/react:
     dependencies:
       '@lantun/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
     devDependencies:
       '@types/react':
@@ -115,7 +114,7 @@ importers:
   packages/voice-kitten:
     devDependencies:
       '@lantun/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       esbuild:
         specifier: ^0.28.2

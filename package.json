@@ -10,12 +10,13 @@
     "dev": "turbo run dev --filter=playground",
     "build": "turbo run build",
     "test": "turbo run test",
-    "e2e": "turbo run build --filter=cdn && pnpm --filter playground e2e",
-    "size": "turbo run build --filter=cdn && pnpm --filter cdn size",
+    "e2e": "turbo run build --filter=lantun && pnpm --filter playground e2e",
+    "size": "turbo run build --filter=lantun && pnpm --filter lantun size",
     "lint": "biome check .",
     "typecheck": "turbo run typecheck",
-    "live-check": "turbo run build --filter=cdn && pnpm --filter playground live-check",
-    "format": "biome check --write ."
+    "live-check": "turbo run build --filter=lantun && pnpm --filter playground live-check",
+    "format": "biome check --write .",
+    "release": "pnpm build && pnpm test && pnpm -r publish"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.4",
