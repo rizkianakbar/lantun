@@ -2,17 +2,21 @@
 import type { VoiceEngine } from "@lantun/core";
 import { kittenVoices } from "@lantun/voice-kitten";
 
-type Host = Window & {
+type HostWindow = Window & {
   LantunReader?: { registerVoices?: (engine: VoiceEngine) => void };
   __lantunVoices?: VoiceEngine[];
 };
 
 try {
-  const host = window as Host;
+  const host = window as HostWindow;
   const engine = kittenVoices();
-  if (host.LantunReader?.registerVoices)
+
+  if (host.LantunReader?.registerVoices) {
     host.LantunReader.registerVoices(engine);
-  else (host.__lantunVoices ??= []).push(engine);
+  } else {
+    host.__lantunVoices ??= [];
+    host.__lantunVoices.push(engine);
+  }
 } catch (err) {
   console.warn("[Lantun]", err);
 }
