@@ -8,6 +8,7 @@ One script tag adds a small dock to your site. Readers press play and hear the a
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/widget.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/voice-kitten.js"></script>
 ```
 
 ## Why Lantun
@@ -16,7 +17,7 @@ One script tag adds a small dock to your site. Readers press play and hear the a
 - **Follows along as it reads.** The current sentence and word are highlighted, and the page scrolls gently with them.
 - **Starts wherever you want.** Hover a paragraph or select some text, then press play to start there.
 - **Picks up where you left off.** Come back to a half-read article and it continues from the same sentence.
-- **Uses the best voice available.** It ranks the browser's voices, so neural voices come first and robotic or novelty ones are left out. Lifelike voices are an optional add-on.
+- **Sounds human.** Lifelike voices run right in the reader's browser, with no server and no per-use cost. Without them, Lantun still picks the best voice the browser has.
 - **Helps people read, not just listen.** Twelve reading aids and five one-tap profiles.
 - **Won't break your site.** The UI lives in its own shadow root and never touches your article. It survives hostile CSS and strict Content-Security-Policies, and it can't throw errors into your page.
 - **Light.** About 38 kB gzipped, with no dependencies on your side.
@@ -44,42 +45,37 @@ One script tag adds a small dock to your site. Readers press play and hear the a
   </tr>
 </table>
 
-## Install
+## Get started
 
-Pick whichever fits your site. All three give readers the same widget.
+Choose the one that matches your site, and follow only that section.
 
-| Your site                                    | Use                         | Package                                                        |
-| -------------------------------------------- | --------------------------- | -------------------------------------------------------------- |
-| Any HTML page, WordPress, Ghost, a CMS theme | One `<script>` tag          | [`lantun`](https://www.npmjs.com/package/lantun)               |
-| A JavaScript app with a bundler              | `npm install @lantun/core`  | [`@lantun/core`](https://www.npmjs.com/package/@lantun/core)   |
-| A React app                                  | `npm install @lantun/react` | [`@lantun/react`](https://www.npmjs.com/package/@lantun/react) |
+- [**Any website**](#any-website): HTML pages, WordPress, Ghost, Webflow, a CMS theme. Paste two lines, no build step.
+- [**JavaScript app**](#javascript-app): Vue, Svelte, Astro, plain Vite, anything with a bundler.
+- [**React app**](#react-app): React, Next.js, Remix.
 
-Lifelike voices are a separate, optional add-on: [`@lantun/voice-kitten`](https://www.npmjs.com/package/@lantun/voice-kitten), or `voice-kitten.js` for the script tag.
+> [!TIP]
+> **Always add the lifelike voices.** Browser voices differ from device to device, and many sound robotic. The lifelike voices sound natural everywhere and make a much better first impression. Each setup below includes them.
+>
+> They cost you nothing: the voices are generated on the reader's device, and nothing downloads until a reader picks one in the voice menu (about 31 MB, once). A few sentences into their first listen, Lantun suggests them to the reader. They speak English; other languages use the browser's voices.
 
-### 1. Script tag (no build step)
+### Any website
 
-Paste this before `</body>`, or in `<head>`:
+Paste these two lines before `</body>`:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/widget.js"></script>
-```
-
-That's all. Lantun starts when the page loads, finds the article and shows the dock. To add lifelike voices, load the add-on too, before or after the widget:
-
-```html
 <script src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/voice-kitten.js"></script>
 ```
 
-`@0.1` gets bug fixes automatically but never a breaking change. Pin an exact version (`lantun@0.1.0`) if you want nothing to change, or self-host the two files from the [`lantun`](https://www.npmjs.com/package/lantun) package.
+Done. Lantun finds the article and shows the dock when the page loads.
 
-Configure it with attributes on the same tag. Every option is optional:
+To customise it, add attributes to the first tag. All of them are optional:
 
 ```html
 <script
   src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/widget.js"
   data-content-selector="article .entry-content"
   data-color="#7c3aed"
-  data-lang="en"
 ></script>
 ```
 
@@ -95,25 +91,13 @@ Configure it with attributes on the same tag. Every option is optional:
 | `data-z-index`           | `2147483000`             | Stacking order.                                         |
 | `data-auto-init`         | `true`                   | `false` waits for you to call `LantunReader.init()`.    |
 
-On a page with a strict CSP, add a `nonce` to the script tag and Lantun reuses it for its styles. Returning readers get their saved reading aids before the first paint.
+Good to know:
 
-To keep something out of the reading, add `data-reader-skip` to it.
+- **Skip a part of the page:** add `data-reader-skip` to any element.
+- **Strict Content-Security-Policy:** add your `nonce` to the script tag; Lantun reuses it for its styles.
+- **Versions:** `lantun@0.1` gets bug fixes automatically, never breaking changes. Use `lantun@0.1.0` to pin an exact version.
 
-### 2. npm
-
-```sh
-npm install @lantun/core
-```
-
-```ts
-import { init } from "@lantun/core";
-
-init({ contentSelector: "article", color: "#7c3aed" });
-```
-
-Call `init()` once the article is in the page. On a single-page app, Lantun notices when the article is replaced and re-reads the new one. Call `destroy()` to remove it completely.
-
-With lifelike voices:
+### JavaScript app
 
 ```sh
 npm install @lantun/core @lantun/voice-kitten
@@ -124,17 +108,22 @@ import { init, registerVoices } from "@lantun/core";
 import { kittenVoices } from "@lantun/voice-kitten";
 
 registerVoices(kittenVoices());
-init();
+init({ contentSelector: "article", color: "#7c3aed" });
 ```
 
-### 3. React
+Call `init()` once the article is on the page. Options are the attributes above in camelCase (`contentSelector`, `excludeSelectors`, `position`, `color`, `lang`, `features: { tts, a11y }`, `zIndex`, `nonce`). In a single-page app, Lantun notices when the article changes and reads the new one. `destroy()` removes it completely.
+
+### React app
 
 ```sh
-npm install @lantun/react
+npm install @lantun/react @lantun/voice-kitten
 ```
 
 ```tsx
-import { LantunWidget } from "@lantun/react";
+import { LantunWidget, registerVoices } from "@lantun/react";
+import { kittenVoices } from "@lantun/voice-kitten";
+
+registerVoices(kittenVoices());
 
 export function ArticlePage() {
   return (
@@ -146,7 +135,7 @@ export function ArticlePage() {
 }
 ```
 
-`<LantunWidget />` takes the same options as `init()`, renders nothing itself, and removes the widget when it unmounts.
+`<LantunWidget />` takes the same options as `init()`. It renders nothing itself and removes the widget when it unmounts.
 
 ## API
 
