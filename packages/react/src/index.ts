@@ -1,19 +1,22 @@
-import { useEffect } from "react";
 import { destroy, init, type ReaderOptions } from "@lantun/core";
+import { useEffect } from "react";
 
 export { registerVoices } from "@lantun/core";
 
 export type ReaderWidgetProps = ReaderOptions;
 
 // Core is a page-level singleton, so the wrapper renders nothing and only owns its lifetime.
-export const ReaderWidget = (props: ReaderWidgetProps): null => {
+export function ReaderWidget(props: ReaderWidgetProps): null {
   const key = JSON.stringify(props);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: keyed on the serialised options, so equal props never re-init
   useEffect(() => {
     init(props);
+
     return () => {
       destroy();
     };
-    // Keyed on the serialised options so a new-but-equal props object does not re-init.
   }, [key]);
+
   return null;
-};
+}
