@@ -1,0 +1,33 @@
+{
+  "name": "cdn",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build && vite build -c vite.voice.config.ts",
+    "typecheck": "tsc --noEmit",
+    "size": "size-limit",
+    "serve": "vite preview --port 4173 --strictPort"
+  },
+  "dependencies": {
+    "@lantun/core": "workspace:*",
+    "@lantun/voice-kitten": "workspace:*"
+  },
+  "devDependencies": {
+    "@size-limit/file": "^14.3.0",
+    "size-limit": "^14.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  },
+  "size-limit": [
+    {
+      "path": "dist/widget.js",
+      "limit": "40 KB",
+      "gzip": true
+    },
+    {
+      "path": "dist/voice-kitten.js",
+      "limit": "8 KB",
+      "gzip": true
+    }
+  ]
+}
