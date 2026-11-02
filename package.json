@@ -14,11 +14,14 @@
     "size": "turbo run build --filter=cdn && pnpm --filter cdn size",
     "lint": "eslint .",
     "typecheck": "turbo run typecheck",
-    "live-check": "turbo run build --filter=cdn && pnpm --filter playground live-check"
+    "live-check": "turbo run build --filter=cdn && pnpm --filter playground live-check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.14.0",
+    "prettier": "^3.9.10",
     "turbo": "^2.11.10",
     "typescript": "7.0.2",
     "typescript-eslint": "^8.72.1"
