@@ -22,3 +22,7 @@ for (const f of fixtures) {
   li.append(a);
   list?.append(li);
 }
+
+// Re-running destroys the previous copy first, so the bookmarklet doubles as "reload widget".
+const bookmarklet = `javascript:(()=>{window.LantunReader?.destroy();const s=document.createElement('script');s.src='http://localhost:4173/widget.js?'+Date.now();document.documentElement.appendChild(s)})()`;
+document.getElementById("bookmarklet")?.setAttribute("href", bookmarklet);
