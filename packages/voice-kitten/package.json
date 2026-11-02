@@ -1,0 +1,32 @@
+{
+  "name": "@lantun/voice-kitten",
+  "version": "0.0.0",
+  "description": "HD voices for @lantun/core: Kitten TTS nano, generated on the reader's device.",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "@lantun/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@lantun/core": "workspace:*",
+    "esbuild": "^0.28.2",
+    "jsdom": "^30.1.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}
