@@ -1,11 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": { "types": ["node", "vite/client"] },
-  "include": [
-    "src",
-    "e2e",
-    "fixtures.ts",
-    "vite.config.ts",
-    "playwright.config.ts"
-  ]
+  "include": ["src", "e2e", "fixtures.ts", "vite.config.ts", "playwright.config.ts"]
 }
