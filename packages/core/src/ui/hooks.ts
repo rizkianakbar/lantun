@@ -13,7 +13,7 @@ export const useStore = <T extends object>(store: Store<T>): T => {
 }
 
 // Closes a popover or panel on a press outside it. composedPath() sees through our shadow root.
-export const useDismiss = (open: boolean, inside: RefObject<HTMLElement>[], onClose: () => void): void => {
+export const useDismiss = (open: boolean, inside: RefObject<HTMLElement | null>[], onClose: () => void): void => {
   const close = useRef(onClose)
   close.current = onClose
   useEffect(() => {
@@ -103,7 +103,7 @@ export const placeDock = (el: HTMLElement, x: number, y: number): void => {
 
 // Keeps the dock in place as the window resizes and as it grows or shrinks (session controls
 // unfolding), so it grows around its centre instead of off the screen.
-export const useDockPlacement = (ref: RefObject<HTMLElement>, x: number, y: number, deps: unknown[]): void => {
+export const useDockPlacement = (ref: RefObject<HTMLElement | null>, x: number, y: number, deps: unknown[]): void => {
   useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
@@ -150,7 +150,7 @@ const offsetIn = (el: HTMLElement, dock: Box): Box => box(dock.left + el.offsetL
 // centred on the control that opened it), above or below a horizontal one. Once placed, a panel
 // keeps its spot while its content changes (a profile hint growing a line must not shift it);
 // only a window resize places it afresh. Phones turn panels into bottom sheets in CSS.
-export const useAnchor = (panel: RefObject<HTMLElement>, anchor: RefObject<HTMLElement>): void => {
+export const useAnchor = (panel: RefObject<HTMLElement | null>, anchor: RefObject<HTMLElement | null>): void => {
   useLayoutEffect(() => {
     const place = (fresh: boolean): void => {
       const el = panel.current
@@ -220,7 +220,7 @@ export const dropDock = (cx: number, cy: number, o: 'v' | 'h', vw: number, vh: n
 
 // Drag from a handle, anywhere on screen. The dock follows the pointer directly during the
 // gesture and the result is committed once at the end, so dragging is not a re-render per move.
-export const useDrag = (target: RefObject<HTMLElement>, o: 'v' | 'h', onStart: () => void, onEnd: (drop: DockDrop) => void) => {
+export const useDrag = (target: RefObject<HTMLElement | null>, o: 'v' | 'h', onStart: () => void, onEnd: (drop: DockDrop) => void) => {
   const cb = useRef({ onStart, onEnd, o })
   cb.current = { onStart, onEnd, o }
   return (e: PointerEvent): void => {

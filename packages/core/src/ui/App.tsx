@@ -78,14 +78,16 @@ export const App = ({ reader, ax, t, lang, side, accent, accentInk }: AppProps) 
   const [message, setMessage] = useState('')
   const root = useRef<HTMLDivElement>(null)
   const dockRef = useRef<HTMLDivElement>(null)
-  const triggers: Triggers = { speed: useRef(null), voice: useRef(null), ax: useRef(null) }
+  const triggers: Triggers = { speed: useRef<HTMLButtonElement>(null), voice: useRef<HTMLButtonElement>(null), ax: useRef<HTMLButtonElement>(null) }
   const popRef = useRef<HTMLDivElement>(null)
   const toastRef = useRef<HTMLDivElement>(null)
   const playing = state.status === 'playing'
   const tts = !!reader && state.issue !== 'unsupported' && state.issue !== 'no-content'
   // Phones always get the flat dock along the bottom; elsewhere it is wherever the reader put it.
   const narrow = useNarrow()
-  const place = narrow ? { x: 0.5, y: 1, o: 'h' as const } : dock
+  const place: DockDrop = narrow
+    ? { x: 0.5, y: 1, o: 'h' }
+    : { x: dock.positionX, y: dock.positionY, o: dock.orientation }
   // Where the dock tucks away to, and which way tooltips open: its nearest edge.
   const edge: Edge = place.o === 'h' ? (place.y < 0.5 ? 'top' : 'bottom') : place.x < 0.5 ? 'left' : 'right'
   const still = axs.still
@@ -225,7 +227,7 @@ export const App = ({ reader, ax, t, lang, side, accent, accentInk }: AppProps) 
           onToggle={toggle}
           onOpen={setOpen}
           onHide={hide}
-          onMove={(drop: DockDrop) => updateDock(drop)}
+          onMove={(drop: DockDrop) => updateDock({ positionX: drop.x, positionY: drop.y, orientation: drop.o })}
         />
       )}
       {pop.shown === 'speed' && reader && <SpeedPop reader={reader} state={state} t={t} popRef={popRef} anchor={triggers.speed} leaving={pop.leaving} />}

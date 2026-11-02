@@ -29,8 +29,8 @@ interface Props {
   ax: AxController
   s: AxSettings
   t: Strings
-  panelRef: RefObject<HTMLElement>
-  anchor: RefObject<HTMLElement>
+  panelRef: RefObject<HTMLElement | null>
+  anchor: RefObject<HTMLElement | null>
   onClose: () => void
   announce: (msg: string) => void
   leaving: boolean

@@ -2,7 +2,7 @@ import type { RefObject } from 'preact'
 import { useEffect, useRef } from 'preact/hooks'
 import type { Reader, ReaderState } from '../reader'
 import type { EngineStatus, Voice } from '../speech/types'
-import { MAX_RATE, MIN_RATE, RATE_STEP } from '../speech/player'
+import { MAX_RATE, MIN_RATE, RATE_STEP } from '../speech/player.constants'
 import { describeVoice, voiceTip } from '../speech/voices'
 import type { Orientation } from '../state/dock'
 import { radioKeys, useAnchor, useCountdown, useDockPlacement, useDrag, type DockDrop } from './hooks'
@@ -15,9 +15,9 @@ const RING = 2 * Math.PI * 22
 export type Pop = 'speed' | 'voice' | 'ax'
 
 export interface Triggers {
-  speed: RefObject<HTMLButtonElement>
-  voice: RefObject<HTMLButtonElement>
-  ax: RefObject<HTMLButtonElement>
+  speed: RefObject<HTMLButtonElement | null>
+  voice: RefObject<HTMLButtonElement | null>
+  ax: RefObject<HTMLButtonElement | null>
 }
 
 interface DockProps {
@@ -33,7 +33,7 @@ interface DockProps {
   // Draws attention to the voice button while the one-time voice hint is showing.
   hint: boolean
   axOn: boolean | null
-  dockRef: RefObject<HTMLDivElement>
+  dockRef: RefObject<HTMLDivElement | null>
   triggers: Triggers
   onToggle: () => void
   onOpen: (pop: Pop | null) => void
@@ -184,8 +184,8 @@ interface PopProps {
   reader: Reader
   state: ReaderState
   t: Strings
-  popRef: RefObject<HTMLDivElement>
-  anchor: RefObject<HTMLElement>
+  popRef: RefObject<HTMLDivElement | null>
+  anchor: RefObject<HTMLElement | null>
   leaving: boolean
 }
 

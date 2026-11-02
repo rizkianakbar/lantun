@@ -1,4 +1,5 @@
 import { isRecord, readJson, writeJson } from "./storage";
+import { clampRate } from "../speech/player.lib";
 
 export interface ReaderSettings {
   rate: number;
