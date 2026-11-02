@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { denoise, highPass, level } from "./denoise";
+import { denoise, highPass, level } from "./audio.lib";
 
 const RATE = 24000;
 // Deterministic hiss, so the test does not flake.
@@ -22,8 +22,7 @@ describe("denoise", () => {
   const n = RATE;
   const signal = hiss(n, 0.006);
   for (let i = n / 4; i < (3 * n) / 4; i++)
-    signal[i] =
-      (signal[i] ?? 0) + 0.3 * Math.sin((2 * Math.PI * 220 * i) / RATE);
+    signal[i] = (signal[i] ?? 0) + 0.3 * Math.sin((2 * Math.PI * 220 * i) / RATE);
   const out = denoise(signal, RATE);
 
   it("keeps the length", () => {
@@ -43,10 +42,7 @@ describe("denoise", () => {
   });
 
   it("removes rumble below the voice but keeps a low voice", () => {
-    const tone = (hz: number) =>
-      Float32Array.from({ length: RATE }, (_, i) =>
-        Math.sin((2 * Math.PI * hz * i) / RATE),
-      );
+    const tone = (hz: number) => Float32Array.from({ length: RATE }, (_, i) => Math.sin((2 * Math.PI * hz * i) / RATE));
     const rumble = tone(30);
     const voice = tone(120);
     highPass(rumble, RATE);
@@ -62,10 +58,7 @@ describe("denoise", () => {
 
 describe("level", () => {
   const tone = (amp: number) =>
-    Float32Array.from(
-      { length: RATE },
-      (_, i) => amp * Math.sin((2 * Math.PI * 200 * i) / RATE),
-    );
+    Float32Array.from({ length: RATE }, (_, i) => amp * Math.sin((2 * Math.PI * 200 * i) / RATE));
 
   it("brings quiet and loud clips to the same level", () => {
     const quiet = level(tone(0.15), RATE);
