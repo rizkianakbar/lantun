@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "lantun-reader",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.25.0",
@@ -7,11 +7,14 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "turbo run build",
     "dev": "turbo run dev --filter=playground",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "e2e": "turbo run build --filter=cdn && pnpm --filter playground e2e",
+    "size": "turbo run build --filter=cdn && pnpm --filter cdn size",
+    "lint": "eslint .",
+    "typecheck": "turbo run typecheck",
+    "live-check": "turbo run build --filter=cdn && pnpm --filter playground live-check"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
