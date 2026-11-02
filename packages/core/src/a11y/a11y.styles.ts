@@ -1,31 +1,36 @@
-// The one global stylesheet the widget may add (CLAUDE.md). Every rule is scoped under an
-// html.ax-* class, so it is inert until the reader turns a setting on.
+// The one global stylesheet the widget adds. Every rule is scoped under an html.ax-* class, so it
+// is inert until the reader turns a setting on.
 
-const TEXT = 'p,li,dt,dd,blockquote,figcaption,caption,td,th,label,legend,summary,pre,h1,h2,h3,h4,h5,h6'
+const TEXT = "p,li,dt,dd,blockquote,figcaption,caption,td,th,label,legend,summary,pre,h1,h2,h3,h4,h5,h6";
 // Icon fonts render glyphs from ligatures or private-use characters; changing their font or
 // spacing turns icons into gibberish.
 const ICONS =
-  'i,svg,svg *,[class*="icon"],[class*="fa-"],[class^="fa "],.material-icons,.material-symbols-outlined,.dashicons,[aria-hidden="true"]'
-const MEDIA = 'img,picture,video,canvas,iframe,svg,svg *,object,embed'
-const OURS = 'lantun-reader,lantun-overlay'
-const SANS = 'ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif'
-const DYSLEXIC_SRC = 'https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.3.0/files/opendyslexic-latin'
+  'i,svg,svg *,[class*="icon"],[class*="fa-"],[class^="fa "],.material-icons,.material-symbols-outlined,.dashicons,[aria-hidden="true"]';
+const MEDIA = "img,picture,video,canvas,iframe,svg,svg *,object,embed";
+const OURS = "lantun-reader,lantun-overlay";
+const SANS = 'ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+const DYSLEXIC_SRC = "https://cdn.jsdelivr.net/npm/@fontsource/opendyslexic@5.3.0/files/opendyslexic-latin";
 
 const CURSOR =
-  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M9 5v34l9-8 6 13 7-3-6-13h12z' fill='%23000' stroke='%23fff' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E\") 9 5,auto"
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M9 5v34l9-8 6 13 7-3-6-13h12z' fill='%23000' stroke='%23fff' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E\") 9 5,auto";
 
-const scale = (n: number, z: number): string => `html.ax-text-${n} :is(${TEXT}):not(:is(${TEXT}) *){zoom:${z}}`
-const line = (n: number, v: number): string => `html.ax-line-${n} body :is(${TEXT}){line-height:${v}!important}`
-const spacing = (n: number, l: number): string =>
-  `html.ax-spacing-${n} body *:not(${ICONS}){letter-spacing:${l}em!important;word-spacing:${l * 2}em!important}`
+function scale(n: number, z: number): string {
+  return `html.ax-text-${n} :is(${TEXT}):not(:is(${TEXT}) *){zoom:${z}}`;
+}
+function line(n: number, v: number): string {
+  return `html.ax-line-${n} body :is(${TEXT}){line-height:${v}!important}`;
+}
+function spacing(n: number, l: number): string {
+  return `html.ax-spacing-${n} body *:not(${ICONS}){letter-spacing:${l}em!important;word-spacing:${l * 2}em!important}`;
+}
 
 export const AX_CSS = [
   // Our crossfade between looks (controller.ts): short, and never in the way of the next click.
-  'html.ax-morph::view-transition{pointer-events:none}',
-  'html.ax-morph::view-transition-old(root),html.ax-morph::view-transition-new(root){animation-duration:.22s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}',
+  "html.ax-morph::view-transition{pointer-events:none}",
+  "html.ax-morph::view-transition-old(root),html.ax-morph::view-transition-new(root){animation-duration:.22s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}",
   // The widget is its own layer (mount.tsx names it) and holds still: only the page changes.
-  'html.ax-morph::view-transition-old(lantun-ui){display:none}',
-  'html.ax-morph::view-transition-group(lantun-ui),html.ax-morph::view-transition-new(lantun-ui){animation:none}',
+  "html.ax-morph::view-transition-old(lantun-ui){display:none}",
+  "html.ax-morph::view-transition-group(lantun-ui),html.ax-morph::view-transition-new(lantun-ui){animation:none}",
   // Zoom on the outermost text blocks only: scales px-based themes (where font-size on <html>
   // does nothing) without compounding on nested blocks like li > p.
   scale(115, 1.15),
@@ -68,4 +73,4 @@ export const AX_CSS = [
 
   `html.ax-no-images :is(img,picture,video,canvas,[role="img"]){visibility:hidden!important}`,
   `html.ax-no-images body *:not(${OURS}){background-image:none!important}`,
-].join('\n')
+].join("\n");
