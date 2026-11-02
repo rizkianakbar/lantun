@@ -1,5 +1,4 @@
-// everything we persist lives under one prefix, and every access is guarded: storage can be
-// disabled, full, or throw in private modes, and none of that may reach the host page.
+// Storage can be disabled, full or throwing (private modes); none of that may reach the host page.
 const PREFIX = "lantun:";
 
 function storage(): Storage | null {
@@ -13,6 +12,7 @@ function storage(): Storage | null {
 export function readJson(key: string): unknown {
   try {
     const raw = storage()?.getItem(PREFIX + key);
+
     return raw ? (JSON.parse(raw) as unknown) : null;
   } catch {
     return null;
@@ -23,7 +23,7 @@ export function writeJson(key: string, value: unknown): void {
   try {
     storage()?.setItem(PREFIX + key, JSON.stringify(value));
   } catch {
-    //quota or privacy mode: settings simply do not presist.
+    // Settings simply do not persist.
   }
 }
 
