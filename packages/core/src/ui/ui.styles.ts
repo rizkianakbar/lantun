@@ -275,4 +275,4 @@ export const UI_CSS = `
   .ring .prg,.pips i.f,.knobs,.dot{background:Highlight;stroke:Highlight}
   .tile[aria-checked=true],.tile[data-on],.pchip[aria-pressed=true]{outline:2px solid Highlight}
 }
-`
+`;
