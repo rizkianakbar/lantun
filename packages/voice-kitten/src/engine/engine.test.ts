@@ -1,7 +1,9 @@
 import type { SpeakHandlers, SpeakRequest } from "@lantun/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createKittenEngine, splitFirstClause } from "./engine";
-import type { FromWorker, ToWorker } from "./protocol";
+import type { FromWorker, ToWorker } from "../worker/worker.types";
+import { createKittenEngine } from "./engine";
+import { VOICE_NAMES } from "./engine.constants";
+import { splitFirstClause } from "./engine.lib";
 
 // Just enough of HTMLAudioElement: a media clock the test moves, and an end it can trigger.
 class FakeAudio {
@@ -20,9 +22,7 @@ class FakeAudio {
   play() {
     this.played.push(this.src);
     return this.refuse
-      ? Promise.reject(
-          Object.assign(new Error("blocked"), { name: "NotAllowedError" }),
-        )
+      ? Promise.reject(Object.assign(new Error("blocked"), { name: "NotAllowedError" }))
       : Promise.resolve();
   }
   pause = vi.fn();
@@ -43,9 +43,7 @@ class FakeWorker {
     this.onmessage?.({ data: msg } as MessageEvent<FromWorker>);
   }
   synths() {
-    return this.sent.filter(
-      (m): m is Extract<ToWorker, { type: "synth" }> => m.type === "synth",
-    );
+    return this.sent.filter((m): m is Extract<ToWorker, { type: "synth" }> => m.type === "synth");
   }
 }
 
@@ -86,12 +84,7 @@ const req = (text: string, rate = 1): SpeakRequest => ({
   voice: jasper,
 });
 // Word starts spread evenly over the clip unless given.
-const audio = (
-  id: number,
-  seconds: number,
-  ms = 300,
-  starts = [0, seconds / 3, (2 * seconds) / 3],
-) =>
+const audio = (id: number, seconds: number, ms = 300, starts = [0, seconds / 3, (2 * seconds) / 3]) =>
   worker.reply({
     type: "audio",
     id,
@@ -140,28 +133,16 @@ describe("splitFirstClause", () => {
 });
 
 describe("kitten engine", () => {
-  it("offers eight English voices without downloading anything", async () => {
+  it("offers its English voices without downloading anything", async () => {
     const engine = setup();
     const voices = await engine.getVoices();
-    expect(voices.map((v) => v.name)).toEqual([
-      "Jasper",
-      "Luna",
-      "Bruno",
-      "Rosie",
-      "Hugo",
-      "Kiki",
-      "Leo",
-    ]);
-    expect(voices.every((v) => v.engine === "kitten" && v.downloadBytes)).toBe(
-      true,
-    );
+    expect(voices.map((v) => v.name)).toEqual([...VOICE_NAMES]);
+    expect(voices.every((v) => v.engine === "kitten" && v.downloadBytes)).toBe(true);
     expect(worker.sent).toEqual([]);
   });
 
   it("offers nothing to readers who asked to save data", async () => {
-    expect(
-      await setup(win({ connection: { saveData: true } })).getVoices(),
-    ).toEqual([]);
+    expect(await setup(win({ connection: { saveData: true } })).getVoices()).toEqual([]);
   });
 
   it("loads on first use, reporting progress, then plays words when the model says they start", async () => {
@@ -192,13 +173,10 @@ describe("kitten engine", () => {
   it("makes clips at each voice's calibrated pace and applies the reader's speed at playback", async () => {
     const engine = setup();
     engine.speak(req("Hi.", 1.5), handlers());
-    engine.speak(
-      { ...req("Hi."), voice: { ...jasper, id: "kitten:Kiki", name: "Kiki" } },
-      handlers(),
-    );
+    engine.speak({ ...req("Hi."), voice: { ...jasper, id: "kitten:Leo", name: "Leo" } }, handlers());
     expect(worker.synths().map((m) => [m.voice, m.speed])).toEqual([
       ["Jasper", 0.78],
-      ["Kiki", 0.77],
+      ["Leo", 0.98],
     ]);
   });
 
@@ -218,9 +196,7 @@ describe("kitten engine", () => {
     const h = handlers();
     engine.speak(req(LONG), h);
     const [head, tail] = worker.synths();
-    expect([head?.text, tail?.text]).toEqual(
-      splitFirstClause(LONG).map((p) => p.text),
-    );
+    expect([head?.text, tail?.text]).toEqual(splitFirstClause(LONG).map((p) => p.text));
     audio(head?.id ?? 0, 2, 300, [0, 0.4, 0.8, 1.2, 1.6, 1.9]);
     await flush();
     expect(h.onStart).toHaveBeenCalled();
@@ -259,12 +235,7 @@ describe("kitten engine", () => {
     engine.prepare?.(req("Three is a long one."));
     engine.prepare?.(req("Four."));
     await flush();
-    expect(worker.synths().map((m) => m.text)).toEqual([
-      "One.",
-      "Two.",
-      "Three is a long one.",
-      "Four.",
-    ]);
+    expect(worker.synths().map((m) => m.text)).toEqual(["One.", "Two.", "Three is a long one.", "Four."]);
     const drop = worker.sent.at(-1);
     expect(drop?.type === "drop" && drop.keep.sort()).toEqual([2, 3, 4]);
   });
@@ -323,9 +294,7 @@ describe("kitten engine", () => {
     FakeAudio.last.refuse = true;
     audio(worker.synths()[0]?.id ?? 0, 1);
     await flush();
-    expect(h.onError).toHaveBeenCalledWith(
-      expect.objectContaining({ code: "not-allowed" }),
-    );
+    expect(h.onError).toHaveBeenCalledWith(expect.objectContaining({ code: "not-allowed" }));
   });
 
   it("reports a device that cannot keep up with listening speed", async () => {
@@ -359,9 +328,7 @@ describe("kitten engine", () => {
       progress: 0,
       error: "failed",
     });
-    expect(h.onError).toHaveBeenCalledWith(
-      expect.objectContaining({ code: "engine-failed" }),
-    );
+    expect(h.onError).toHaveBeenCalledWith(expect.objectContaining({ code: "engine-failed" }));
   });
 
   it("reports a load failure from the worker", () => {
