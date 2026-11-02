@@ -47,6 +47,13 @@ importers:
         version: 8.3.5(@types/node@26.6.6)(esbuild@0.28.2)
 
   apps/playground:
+    dependencies:
+      '@lantun/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@lantun/voice-kitten':
+        specifier: workspace:*
+        version: link:../../packages/voice-kitten
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.14.0

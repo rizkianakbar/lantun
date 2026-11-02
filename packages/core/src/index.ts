@@ -16,6 +16,7 @@ export type {
   Voice,
   VoiceEngine,
 } from "./speech/types";
+export type { Position, ReaderEvent, ReaderOptions, Side } from "./types";
 export { resolveOptions } from "./options";
 export { optionsFromDataset } from "./dataset";
 export { applySavedAx } from "./a11y/controller";
