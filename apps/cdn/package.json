@@ -1,18 +1,44 @@
 {
-  "name": "cdn",
-  "private": true,
+  "name": "lantun",
+  "version": "0.1.0",
+  "description": "Lantun as a script tag: read any article aloud with word highlighting, plus reading aids. No build step, no backend.",
+  "keywords": [
+    "text-to-speech",
+    "tts",
+    "read-aloud",
+    "accessibility",
+    "a11y",
+    "widget",
+    "script-tag",
+    "cdn"
+  ],
+  "license": "MIT",
+  "author": "rizkianakbar",
+  "homepage": "https://github.com/rizkianakbar/lantun#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rizkianakbar/lantun.git",
+    "directory": "apps/cdn"
+  },
+  "bugs": "https://github.com/rizkianakbar/lantun/issues",
   "type": "module",
+  "unpkg": "dist/widget.js",
+  "jsdelivr": "dist/widget.js",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "vite build && vite build -c vite.voice.config.ts",
     "typecheck": "tsc --noEmit",
     "size": "size-limit",
     "serve": "vite preview --port 4173 --strictPort"
   },
-  "dependencies": {
-    "@lantun/core": "workspace:*",
-    "@lantun/voice-kitten": "workspace:*"
-  },
   "devDependencies": {
+    "@lantun/core": "workspace:^",
+    "@lantun/voice-kitten": "workspace:^",
     "@size-limit/file": "^14.3.0",
     "size-limit": "^14.3.0",
     "typescript": "^7.0.2",
