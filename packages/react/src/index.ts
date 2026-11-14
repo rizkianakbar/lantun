@@ -1,3 +1,5 @@
+"use client";
+
 import { destroy, init, type ReaderOptions } from "@lantun/core";
 import { useEffect } from "react";
 

@@ -4,6 +4,8 @@
 
 One script tag adds a small dock to your site. Readers press play and hear the article, with each sentence and word highlighted as it is spoken. A second button opens reading aids for low vision, dyslexia, ADHD and more. No account, no backend, no changes to your markup.
 
+**[Try the live demo →](https://lantun.rzknkbr.xyz)** Open any sample article and press play.
+
 ![Lantun reading an article aloud, highlighting the current sentence and word](docs/screenshots/playing.png)
 
 ```html
@@ -95,7 +97,7 @@ Good to know:
 
 - **Skip a part of the page:** add `data-reader-skip` to any element.
 - **Strict Content-Security-Policy:** add your `nonce` to the script tag; Lantun reuses it for its styles.
-- **Versions:** `lantun@0.1` gets bug fixes automatically, never breaking changes. Use `lantun@0.1.0` to pin an exact version.
+- **Versions:** `lantun@0.1` gets bug fixes automatically, never breaking changes. Use `lantun@0.1.1` to pin an exact version.
 
 ### JavaScript app
 

@@ -1,6 +1,6 @@
 {
   "name": "@lantun/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read any article aloud with word highlighting, plus reading aids for low vision, dyslexia and ADHD. One script, no backend.",
   "keywords": [
     "text-to-speech",
@@ -15,7 +15,7 @@
   ],
   "license": "MIT",
   "author": "rizkianakbar",
-  "homepage": "https://github.com/rizkianakbar/lantun#readme",
+  "homepage": "https://lantun.rzknkbr.xyz",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rizkianakbar/lantun.git",

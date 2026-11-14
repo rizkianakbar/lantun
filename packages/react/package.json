@@ -1,17 +1,21 @@
 {
   "name": "@lantun/react",
-  "version": "0.1.0",
-  "description": "React component for Lantun: read articles aloud with highlighting and reading aids.",
+  "version": "0.1.1",
+  "description": "Read-aloud widget for React and Next.js: text-to-speech with sentence and word highlighting, plus reading aids for low vision, dyslexia and ADHD.",
   "keywords": [
     "react",
+    "nextjs",
     "text-to-speech",
+    "tts",
     "read-aloud",
     "accessibility",
+    "a11y",
+    "dyslexia",
     "lantun"
   ],
   "license": "MIT",
   "author": "rizkianakbar",
-  "homepage": "https://github.com/rizkianakbar/lantun#readme",
+  "homepage": "https://lantun.rzknkbr.xyz",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rizkianakbar/lantun.git",

@@ -1,7 +1,7 @@
 {
   "name": "lantun",
-  "version": "0.1.0",
-  "description": "Lantun as a script tag: read any article aloud with word highlighting, plus reading aids. No build step, no backend.",
+  "version": "0.1.1",
+  "description": "Add read-aloud to any website with one script tag: text-to-speech with word highlighting, plus reading aids for low vision, dyslexia and ADHD. No build step, no backend.",
   "keywords": [
     "text-to-speech",
     "tts",
@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "author": "rizkianakbar",
-  "homepage": "https://github.com/rizkianakbar/lantun#readme",
+  "homepage": "https://lantun.rzknkbr.xyz",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rizkianakbar/lantun.git",
