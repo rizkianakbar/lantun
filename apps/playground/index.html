@@ -3,14 +3,99 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Reader playground</title>
+    <title>Lantun: Free read-aloud (text-to-speech) widget for websites</title>
+    <meta
+      name="description"
+      content="Add read-aloud to any website with one script tag. Text-to-speech with word highlighting, reading aids for dyslexia and low vision, and free lifelike voices."
+    />
+    <link rel="canonical" href="https://lantun.rzknkbr.xyz/" />
+    <meta name="google-site-verification" content="RdPd_pSpuuGuy5Mm4GPO15wWtIms-5sj-46qT1JKpiY" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Lantun" />
+    <meta property="og:url" content="https://lantun.rzknkbr.xyz/" />
+    <meta property="og:title" content="Lantun: read any article aloud, with one script tag" />
+    <meta
+      property="og:description"
+      content="Text-to-speech with word-by-word highlighting, reading aids, and lifelike voices that run in the browser. Free and open source."
+    />
+    <meta property="og:image" content="https://lantun.rzknkbr.xyz/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Lantun dock reading an article aloud, beside the headline: Turn any article into something people can listen to." />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Lantun: read any article aloud, with one script tag" />
+    <meta
+      name="twitter:description"
+      content="Text-to-speech with word-by-word highlighting, reading aids, and lifelike voices that run in the browser. Free and open source."
+    />
+    <meta name="twitter:image" content="https://lantun.rzknkbr.xyz/og.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "Lantun",
+            "url": "https://lantun.rzknkbr.xyz/"
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "Lantun",
+            "url": "https://lantun.rzknkbr.xyz/",
+            "description": "A read-aloud widget for any website: text-to-speech with word highlighting, reading aids for low vision, dyslexia and ADHD, and lifelike voices that run on the reader's device.",
+            "applicationCategory": "DeveloperApplication",
+            "applicationSubCategory": "Accessibility",
+            "operatingSystem": "Any modern web browser",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "license": "https://opensource.org/licenses/MIT",
+            "isAccessibleForFree": true,
+            "image": "https://lantun.rzknkbr.xyz/og.png",
+            "screenshot": "https://raw.githubusercontent.com/rizkianakbar/lantun/main/docs/screenshots/playing.png",
+            "author": { "@type": "Person", "name": "rizkianakbar", "url": "https://github.com/rizkianakbar" },
+            "sameAs": ["https://github.com/rizkianakbar/lantun", "https://www.npmjs.com/package/lantun"]
+          }
+        ]
+      }
+    </script>
+    <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#121110" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <style>
       :root {
-        color-scheme: light;
+        color-scheme: light dark;
+        --bg: #faf9f6;
+        --surface: #ffffff;
+        --sunk: #f2f0eb;
         --ink: #17171a;
         --muted: #6b6b76;
         --line: #e7e5e0;
-        --bg: #faf9f6;
+        --code-bg: #161513;
+        --code-line: rgb(255 255 255 / 0.07);
+        --mark: #161513;
+        --code-ink: #f1ede5;
+        --accent: #f5b841;
+        --accent-ink: #17171a;
+        --ease: cubic-bezier(0.23, 1, 0.32, 1);
+        --serif: "Iowan Old Style", "Charter", "Palatino Linotype", ui-serif, Georgia, serif;
+        --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #121110;
+          --surface: #1a1917;
+          --sunk: #232120;
+          --ink: #f4f1ea;
+          --muted: #a19c92;
+          --line: #2c2a27;
+          --code-bg: #0c0b0a;
+          --mark: #2a2723;
+        }
       }
       * {
         box-sizing: border-box;
@@ -19,136 +104,892 @@
         margin: 0;
         background: var(--bg);
         color: var(--ink);
-        font:
-          16px/1.55 ui-sans-serif,
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          sans-serif;
+        font: 16px/1.6 var(--sans);
+        -webkit-font-smoothing: antialiased;
       }
-      main {
-        max-width: 760px;
-        margin: 0 auto;
-        padding: 56px 20px 80px;
+      a {
+        color: inherit;
       }
-      h1 {
-        font-size: 30px;
-        letter-spacing: -0.02em;
-        margin: 0 0 8px;
-      }
-      .lede {
-        color: var(--muted);
-        margin: 0 0 40px;
-        max-width: 60ch;
+      code {
+        font: 0.88em var(--mono);
+        background: var(--sunk);
+        padding: 2px 6px;
+        border-radius: 6px;
       }
       h2 {
-        font-size: 12px;
-        font-weight: 650;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin: 36px 0 10px;
+        margin: 0 0 8px;
+        font: 600 30px/1.15 var(--serif);
+        letter-spacing: -0.015em;
       }
-      ul {
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+      }
+
+      /* Top bar */
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        font-size: 17px;
+        letter-spacing: -0.01em;
+        text-decoration: none;
+      }
+      .mark {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--mark);
+        display: grid;
+        place-items: center;
+        color: var(--accent);
+      }
+      .top nav {
+        display: flex;
+        gap: 4px;
+      }
+      .top nav a {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 550;
+        color: var(--muted);
+        text-decoration: none;
+        transition:
+          color 150ms ease,
+          background-color 150ms ease;
+      }
+
+      /* Hero */
+      .hero {
+        padding: 44px 0 28px;
+      }
+      .eyebrow {
+        margin: 0 0 16px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: var(--muted);
+      }
+      h1 {
+        margin: 0 0 18px;
+        max-width: 15em;
+        font: 600 clamp(36px, 6vw, 58px) / 1.05 var(--serif);
+        letter-spacing: -0.025em;
+        text-wrap: balance;
+      }
+      .lede {
+        margin: 0 0 26px;
+        max-width: 56ch;
+        font-size: 18.5px;
+        line-height: 1.55;
+        color: var(--muted);
+        text-wrap: pretty;
+      }
+      .ctas {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 16px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        height: 44px;
+        padding: 0 18px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--ink);
+        font: 600 15px var(--sans);
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+          transform 160ms var(--ease),
+          background-color 150ms ease,
+          border-color 150ms ease;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn.primary {
+        background: var(--accent);
+        border-color: transparent;
+        color: var(--accent-ink);
+      }
+      .btn svg {
+        flex: none;
+      }
+      .hint {
+        margin: 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      /* Install: setup tabs, look controls and the code, in one card */
+      .install {
+        margin: 8px 0 0;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--surface);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -16px rgb(0 0 0 / 0.12);
+        overflow: hidden;
+      }
+      .bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px 16px;
+        padding: 10px 10px 10px 10px;
+      }
+      .tabs {
+        display: inline-flex;
+        gap: 2px;
+        padding: 3px;
+        border-radius: 11px;
+        background: var(--sunk);
+      }
+      .tabs button {
+        height: 32px;
+        padding: 0 13px;
+        border: 0;
+        border-radius: 8px;
+        background: none;
+        color: var(--muted);
+        font: 600 14px var(--sans);
+        cursor: pointer;
+        transition:
+          background-color 150ms ease,
+          color 150ms ease;
+      }
+      .tabs button[aria-selected="true"] {
+        background: var(--surface);
+        color: var(--ink);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+      }
+      .tabs button:focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 1px;
+      }
+      .look {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-right: 4px;
+      }
+      .look fieldset {
+        border: 0;
+        margin: 0;
+        padding: 0;
+        min-width: 0;
+      }
+      .swatches {
+        display: flex;
+        gap: 6px;
+      }
+      .sw {
+        position: relative;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 160ms var(--ease);
+      }
+      .sw:active {
+        transform: scale(0.9);
+      }
+      .sw input {
+        position: absolute;
+        inset: 0;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .sw .dot {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border-radius: 50%;
+        background: var(--c);
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
+        transition: box-shadow 150ms ease;
+      }
+      .sw.custom .dot {
+        background: conic-gradient(#f43f5e, #f59e0b, #22c55e, #06b6d4, #6366f1, #d946ef, #f43f5e);
+      }
+      .sw input:focus-visible + .dot {
+        outline: 2px solid var(--ink);
+        outline-offset: 5px;
+      }
+      .sw input:checked + .dot,
+      .sw.custom[data-on] .dot {
+        box-shadow:
+          0 0 0 2px var(--surface),
+          0 0 0 4px var(--c);
+      }
+      .sw.custom input[type="color"] {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        padding: 0;
+      }
+      .seg {
+        display: inline-flex;
+        padding: 3px;
+        border-radius: 999px;
+        background: var(--sunk);
+      }
+      .seg label {
+        position: relative;
+        cursor: pointer;
+      }
+      .seg input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .seg .pill {
+        display: block;
+        padding: 3px 11px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        transition:
+          background-color 150ms ease,
+          color 150ms ease;
+      }
+      .seg input:checked + .pill {
+        background: var(--surface);
+        color: var(--ink);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+      }
+      .seg input:focus-visible + .pill {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+      }
+      /* Editor look: VS Code's Dark+ colours, a file tab per block, and a line-number gutter. */
+      #snippets {
+        background: var(--code-bg);
+        color: #d4d4d4;
+      }
+      .code + .code {
+        border-top: 1px solid var(--code-line);
+      }
+      .file {
+        display: flex;
+        align-items: center;
+        height: 38px;
+        padding-right: 6px;
+        background: rgb(255 255 255 / 0.025);
+        border-bottom: 1px solid var(--code-line);
+      }
+      .fname {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 100%;
+        padding: 0 16px 0 14px;
+        background: var(--code-bg);
+        border-right: 1px solid var(--code-line);
+        box-shadow: inset 0 1px 0 var(--accent);
+        font: 12.5px var(--sans);
+        color: #e8e6e1;
+      }
+      .fname::before {
+        font: 700 10.5px var(--mono);
+        letter-spacing: -0.02em;
+      }
+      .code.html .fname::before {
+        content: "<>";
+        color: #e37933;
+      }
+      .code.ts .fname::before {
+        content: "TS";
+        color: #519aba;
+      }
+      .code.tsx .fname::before {
+        content: "⚛";
+        font-size: 13px;
+        color: #61dafb;
+      }
+      .code.sh .fname::before {
+        content: ">_";
+        color: #8f897e;
+      }
+      .code pre {
+        margin: 0;
+        padding: 14px 20px 16px 12px;
+        overflow-x: auto;
+        font: 13.5px/1.7 var(--mono);
+        tab-size: 2;
+      }
+      .code code {
+        display: block;
+        counter-reset: line;
+        font: inherit;
+        background: none;
+        padding: 0;
+        border-radius: 0;
+      }
+      /* Wrapped lines (on phones) continue under the code, not under the gutter. */
+      .line {
+        display: block;
+        min-height: 1.7em;
+        padding-left: 4.5ch;
+        text-indent: -4.5ch;
+      }
+      .line::before {
+        counter-increment: line;
+        content: counter(line);
+        display: inline-block;
+        width: 2.5ch;
+        margin-right: 2ch;
+        text-align: right;
+        text-indent: 0;
+        color: #6e7681;
+        user-select: none;
+      }
+      .code.sh .line::before {
+        content: "$";
+        color: #8f897e;
+      }
+      .t-keyword {
+        color: #c586c0;
+      }
+      .t-storage,
+      .t-tag {
+        color: #569cd6;
+      }
+      .t-fn {
+        color: #dcdcaa;
+      }
+      .t-string {
+        color: #ce9178;
+      }
+      .t-type {
+        color: #4ec9b0;
+      }
+      .t-attr,
+      .t-var {
+        color: #9cdcfe;
+      }
+      .t-punct {
+        color: #808080;
+      }
+      .t-b1 {
+        color: #ffd700;
+      }
+      .t-b2 {
+        color: #da70d6;
+      }
+      .t-b3 {
+        color: #179fff;
+      }
+      .copy {
+        margin-left: auto;
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 8px;
+        background: none;
+        color: #a19c92;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        transition:
+          transform 160ms var(--ease),
+          background-color 150ms ease;
+      }
+      .copy:active {
+        transform: scale(0.94);
+      }
+      .copy svg {
+        grid-area: 1 / 1;
+        transition:
+          opacity 200ms ease,
+          transform 200ms var(--ease),
+          filter 200ms ease;
+      }
+      .copy .done {
+        opacity: 0;
+        transform: scale(0.8);
+        filter: blur(2px);
+        color: var(--accent);
+      }
+      .copy[data-copied] .idle {
+        opacity: 0;
+        transform: scale(0.8);
+        filter: blur(2px);
+      }
+      .copy[data-copied] .done {
+        opacity: 1;
+        transform: none;
+        filter: none;
+      }
+      .note {
+        margin: 12px 2px 0;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      /* Features: part of what the dock reads aloud */
+      .features {
+        padding: 72px 0 8px;
+      }
+      .sub {
+        margin: 0 0 24px;
+        max-width: 58ch;
+        color: var(--muted);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .feature {
+        padding: 18px 18px 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+      }
+      .feature h3 {
+        margin: 0 0 6px;
+        font-size: 15.5px;
+        font-weight: 650;
+        letter-spacing: -0.01em;
+      }
+      .feature p {
+        margin: 0;
+        font-size: 14.5px;
+        line-height: 1.55;
+        color: var(--muted);
+      }
+
+      /* Questions */
+      .faq-sec {
+        padding: 64px 0 8px;
+      }
+      .faq {
+        margin-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .faq details {
+        border-bottom: 1px solid var(--line);
+      }
+      .faq summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 2px;
+        font-weight: 600;
+        cursor: pointer;
+        list-style: none;
+      }
+      .faq summary::-webkit-details-marker {
+        display: none;
+      }
+      .faq summary::after {
+        content: "+";
+        flex: none;
+        font: 400 22px/1 var(--sans);
+        color: var(--muted);
+        transition: transform 200ms var(--ease);
+      }
+      .faq details[open] summary::after {
+        transform: rotate(45deg);
+      }
+      .faq summary:focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+        border-radius: 6px;
+      }
+      .faq p {
+        margin: -4px 0 18px;
+        max-width: 64ch;
+        color: var(--muted);
+      }
+
+      /* Samples */
+      .samples-sec {
+        padding: 64px 0 8px;
+      }
+      .samples {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 28px;
+      }
+      .samples h3 {
+        margin: 0 0 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .samples ul {
         list-style: none;
         margin: 0;
         padding: 0;
-        border-top: 1px solid var(--line);
       }
-      li a {
+      .samples li a {
         display: flex;
+        align-items: baseline;
         justify-content: space-between;
-        gap: 16px;
-        padding: 13px 2px;
+        gap: 12px;
+        padding: 11px 0;
         border-bottom: 1px solid var(--line);
-        color: inherit;
         text-decoration: none;
       }
-      li a:hover .name {
-        text-decoration: underline;
-        text-underline-offset: 3px;
+      .samples .name {
+        font-weight: 550;
       }
-      .tag {
-        font-size: 13px;
+      .samples .tag {
+        flex: none;
+        font-size: 12.5px;
         color: var(--muted);
-        white-space: nowrap;
       }
-      .card {
-        margin-top: 44px;
-        padding: 20px 22px;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: #fff;
+      .samples .arrow {
+        display: inline-block;
+        margin-left: 8px;
+        transition: transform 200ms var(--ease);
       }
-      .card h3 {
-        margin: 0 0 6px;
-        font-size: 16px;
+      .anywhere {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px 18px;
+        margin-top: 28px;
+        padding: 16px 18px;
+        border: 1px dashed var(--line);
+        border-radius: 16px;
       }
-      .card p {
-        margin: 0 0 12px;
-        color: var(--muted);
+      .anywhere p {
+        flex: 1 1 300px;
+        margin: 0;
         font-size: 14.5px;
+        color: var(--muted);
+      }
+      .anywhere strong {
+        color: var(--ink);
       }
       .bm {
-        display: inline-block;
-        padding: 8px 14px;
-        border-radius: 999px;
-        background: var(--ink);
-        color: #fff;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
         cursor: grab;
       }
-      code {
-        font:
-          13px ui-monospace,
-          SFMono-Regular,
-          Menlo,
-          monospace;
-        background: #f0eee9;
-        padding: 2px 6px;
-        border-radius: 5px;
+
+      footer {
+        margin-top: 72px;
+        padding-top: 22px;
+        padding-bottom: 48px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      footer > * {
+        margin: 0;
+      }
+
+      /* Hover only where there is a real pointer: on touch it would stick. */
+      @media (hover: hover) and (pointer: fine) {
+        .top nav a:hover {
+          color: var(--ink);
+          background: var(--sunk);
+        }
+        .btn:not(.primary):hover {
+          border-color: var(--muted);
+        }
+        .samples li a:hover .name {
+          text-decoration: underline;
+          text-underline-offset: 3px;
+        }
+        .samples li a:hover .arrow {
+          transform: translateX(3px);
+        }
+        .tabs button[aria-selected="false"]:hover,
+        .seg label:hover .pill {
+          color: var(--ink);
+        }
+        .copy:hover {
+          background: rgb(255 255 255 / 0.08);
+          color: var(--code-ink);
+        }
+      }
+
+      /* First visit only: the hero settles in, one line after another. */
+      .rise {
+        animation: rise 520ms var(--ease) both;
+        animation-delay: calc(var(--i, 0) * 60ms);
+      }
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .rise {
+          animation-name: fade;
+          animation-duration: 200ms;
+        }
+        @keyframes fade {
+          from {
+            opacity: 0;
+          }
+        }
+        .samples .arrow,
+        .copy svg {
+          transition-duration: 0ms;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 600px) {
+        .wrap {
+          padding: 0 16px;
+        }
+        .hero {
+          padding-top: 24px;
+        }
+        .lede {
+          font-size: 17px;
+        }
+        .bar {
+          padding: 8px;
+        }
+        .tabs {
+          width: 100%;
+        }
+        .tabs button {
+          flex: 1;
+          padding: 0 6px;
+        }
+        .look {
+          width: 100%;
+          justify-content: space-between;
+          padding: 2px 4px 2px;
+        }
+        /* Wrap rather than scroll sideways, so the whole snippet fits a phone. */
+        .code pre {
+          font-size: 12.5px;
+          padding-right: 14px;
+          white-space: pre-wrap;
+          /* Any character, not just spaces: an indented long URL would otherwise leave its indent
+             alone on a line and start below it. */
+          word-break: break-all;
+        }
+        .grid,
+        .samples {
+          grid-template-columns: 1fr;
+        }
+        /* Room for the dock, which lies flat along the bottom on phones. */
+        footer {
+          padding-bottom: 104px;
+        }
       }
     </style>
   </head>
   <body>
-    <main>
-      <h1>Reader playground</h1>
-      <p class="lede">
-        Article pages that copy real WordPress and news-portal layouts, with
-        original sample text. Each one loads the widget the way a publisher
-        would, configured by <code>data-*</code> attributes. Edits to
-        <code>packages/core</code> hot-reload here.
-      </p>
-      <h2>Bahasa Indonesia</h2>
-      <ul id="id"></ul>
-      <h2>English</h2>
-      <ul id="en"></ul>
-      <h2>Stress tests</h2>
-      <ul id="hostile"></ul>
+    <header class="top wrap">
+      <a class="brand" href="/" aria-label="Lantun home">
+        <span class="mark" aria-hidden="true">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <rect x="1" y="5" width="2.5" height="6" rx="1.25" />
+            <rect x="5.5" y="2" width="2.5" height="12" rx="1.25" />
+            <rect x="10" y="4" width="2.5" height="8" rx="1.25" />
+          </svg>
+        </span>
+        Lantun
+      </a>
+      <nav aria-label="Project">
+        <a href="https://github.com/rizkianakbar/lantun">GitHub</a>
+        <a href="https://www.npmjs.com/package/lantun">npm</a>
+      </nav>
+    </header>
 
-      <section class="card">
-        <h3>Try it on any live site</h3>
-        <p>
-          Run
-          <code>pnpm --filter cdn build &amp;&amp; pnpm --filter cdn serve</code
-          >, then drag this to your bookmarks bar and click it on any article.
-          It injects the production <code>widget.js</code>; clicking again
-          reloads it.
+    <!-- The dock reads this whole page, minus the parts marked data-reader-skip. -->
+    <main id="page" class="wrap">
+      <section class="hero">
+        <p class="eyebrow rise" style="--i: 0" data-reader-skip>Free text-to-speech widget · Open source · 38 kB</p>
+        <h1 class="rise" style="--i: 1">Turn any article into something people can listen to.</h1>
+        <p class="lede rise" style="--i: 2">
+          One script tag adds a small dock to your site. Readers press play and hear the article, with each
+          sentence and word highlighted as it is spoken, plus reading aids for low vision, dyslexia and ADHD.
         </p>
-        <!-- biome-ignore lint/a11y/useValidAnchor: src/index.ts sets the bookmarklet href -->
-        <a class="bm" id="bookmarklet" href="#">Read aloud ▸</a>
+        <div class="ctas rise" style="--i: 3" data-reader-skip>
+          <button class="btn primary" type="button" id="listen">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden="true">
+              <path d="M3.5 1.8v10.4a.8.8 0 0 0 1.2.7l8.6-5.2a.8.8 0 0 0 0-1.4L4.7 1.1a.8.8 0 0 0-1.2.7Z" />
+            </svg>
+            Listen to this page
+          </button>
+          <p class="hint">Then try a lifelike voice from the voice menu on the dock.</p>
+        </div>
       </section>
-      <section class="card">
-        <h3>Debugging</h3>
-        <p>
-          <code>localStorage.setItem('lantun:debug', '1')</code> logs which
-          voices fire no word boundaries (and get estimated timing).
-          <code>window.LantunReader</code> is the public API.
+
+      <div id="install" class="rise" style="--i: 4" data-reader-skip>
+        <div class="install">
+          <div class="bar">
+            <div class="tabs" role="tablist" aria-label="Setup" id="tabs"></div>
+            <div class="look">
+              <fieldset>
+                <legend class="sr">Brand colour</legend>
+                <div class="swatches" id="swatches"></div>
+              </fieldset>
+              <fieldset>
+                <legend class="sr">Dock side</legend>
+                <div class="seg">
+                  <label><input type="radio" name="side" value="right" checked /><span class="pill">Right</span></label>
+                  <label><input type="radio" name="side" value="left" /><span class="pill">Left</span></label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div id="snippets" role="tabpanel"></div>
+        </div>
+        <p class="note">
+          Pick a colour and a side: the dock on this page and the code follow along. Every option is in the
+          <a href="https://github.com/rizkianakbar/lantun#readme">README</a>.
         </p>
+      </div>
+
+      <section class="features" aria-labelledby="features-title">
+        <h2 id="features-title">What you are hearing</h2>
+        <p class="sub">Everything here works on your site the moment the script loads.</p>
+        <div class="grid">
+          <article class="feature">
+            <h3>Finds the story</h3>
+            <p>Lantun found this text by itself. It skips menus, ads, captions, code and "read also" links.</p>
+          </article>
+          <article class="feature">
+            <h3>Follows along</h3>
+            <p>Each sentence and word lights up as it is spoken, and the page scrolls gently with it.</p>
+          </article>
+          <article class="feature">
+            <h3>Starts anywhere</h3>
+            <p>Hover a paragraph and press play beside it, or select a few words. It remembers where you stopped.</p>
+          </article>
+          <article class="feature">
+            <h3>Lifelike voices</h3>
+            <p>Natural voices made on the reader's device. No server, no cost per listen, nothing to download until chosen.</p>
+          </article>
+          <article class="feature">
+            <h3>Reading aids</h3>
+            <p>Larger text, more spacing, a dyslexia font, calmer colours and a reading guide, one tap away.</p>
+          </article>
+          <article class="feature">
+            <h3>Safe on any site</h3>
+            <p>It lives in its own shadow root, survives hostile CSS and strict security policies, and never breaks the page.</p>
+          </article>
+        </div>
       </section>
+
+      <section class="faq-sec" aria-labelledby="faq-title" data-reader-skip>
+        <h2 id="faq-title">Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Is Lantun free?</summary>
+            <p>
+              Yes. It is open source under the MIT licence. The lifelike voices are made on each reader's device, so
+              there is no API key, no account and no cost per listen.
+            </p>
+          </details>
+          <details>
+            <summary>Does it work with WordPress, Ghost, Webflow or Shopify?</summary>
+            <p>
+              Yes. Paste the two script lines into your theme's footer or custom code setting. Lantun finds the article on
+              each page by itself. If it ever picks the wrong part, point it at your article with
+              <code>data-content-selector</code>.
+            </p>
+          </details>
+          <details>
+            <summary>Will it slow my site down?</summary>
+            <p>
+              The widget is about 38 kB gzipped and starts after your page has loaded. The lifelike voices
+              (about 31 MB) download only when a reader picks one, and then stay cached in their browser.
+            </p>
+          </details>
+          <details>
+            <summary>Which languages does it read?</summary>
+            <p>
+              Any language the reader's browser has a voice for. The lifelike voices speak English. The dock itself is in
+              English or Indonesian, following the page language.
+            </p>
+          </details>
+          <details>
+            <summary>What about privacy?</summary>
+            <p>
+              Lantun has no server and collects nothing. The lifelike voices run entirely in the browser. Some browsers'
+              own "online" voices are provided by the browser maker, as with any use of those voices.
+            </p>
+          </details>
+          <details>
+            <summary>Is the widget itself accessible?</summary>
+            <p>
+              It works fully by keyboard, speaks clearly to screen readers, respects reduced motion, and is checked with
+              axe in every state.
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <section class="samples-sec" aria-labelledby="samples-title" data-reader-skip>
+        <h2 id="samples-title">Try it on real layouts</h2>
+        <p class="sub">Sample articles that copy real blog and news-site layouts, ads and all. Lantun reads only the story.</p>
+        <div class="samples">
+          <div>
+            <h3>English</h3>
+            <ul id="en"></ul>
+          </div>
+          <div>
+            <h3>Bahasa Indonesia</h3>
+            <ul id="id"></ul>
+            <h3 style="margin-top: 24px">Stress test</h3>
+            <ul id="hostile"></ul>
+          </div>
+        </div>
+        <div class="anywhere">
+          <!-- biome-ignore lint/a11y/useValidAnchor: src/index.ts sets the bookmarklet href -->
+          <a class="btn primary bm" id="bookmarklet" href="#">Read aloud</a>
+          <p>
+            <strong>Try it on any site.</strong> Drag this button to your bookmarks bar, open any article, and click
+            it. Click again to reload.
+          </p>
+        </div>
+      </section>
+
+      <footer data-reader-skip>
+        <p>MIT licensed · Made by <a href="https://github.com/rizkianakbar">rizkianakbar</a></p>
+        <p>Debug logs: <code>localStorage.setItem("lantun:debug", "1")</code></p>
+      </footer>
     </main>
+
     <script type="module" src="/src/index.ts"></script>
+    <script type="module" src="/src/inject.ts" data-lantun data-content-selector="#page"></script>
   </body>
 </html>

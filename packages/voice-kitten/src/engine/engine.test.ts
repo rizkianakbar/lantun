@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FromWorker, ToWorker } from "../worker/worker.types";
 import { createKittenEngine } from "./engine";
 import { VOICE_NAMES } from "./engine.constants";
-import { splitFirstClause } from "./engine.lib";
+import { rampParts } from "./engine.lib";
 
 // Just enough of HTMLAudioElement: a media clock the test moves, and an end it can trigger.
 class FakeAudio {
@@ -112,11 +112,11 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe("splitFirstClause", () => {
-  const texts = (t: string) => splitFirstClause(t).map((p) => p.text);
+describe("rampParts", () => {
+  const texts = (t: string) => rampParts(t).map((p) => p.text);
 
-  it("splits a long sentence after its first clause", () => {
-    const parts = splitFirstClause(LONG);
+  it("opens a long sentence at a nearby pause, then plays the rest", () => {
+    const parts = rampParts(LONG);
     expect(parts.map((p) => p.text)).toEqual([
       "The council met on Tuesday evening,",
       "and after a long debate it voted to rebuild the old bridge next spring.",
@@ -124,11 +124,21 @@ describe("splitFirstClause", () => {
     expect(LONG.slice(parts[1]?.offset)).toBe(parts[1]?.text);
   });
 
-  it("never cuts where the sentence has no pause of its own", () => {
+  it("cuts between words where there is no pause, each piece longer than the last", () => {
     const text =
       "A sourdough starter is nothing more than flour and water that has been left alone long enough for wild yeast to move in.";
-    expect(texts(text)).toEqual([text]);
+    const parts = rampParts(text);
+    expect(parts.map((p) => p.text)).toEqual([
+      "A sourdough starter is",
+      "nothing more than flour and water that has",
+      "been left alone long enough for wild yeast to move in.",
+    ]);
+    for (const p of parts) expect(text.slice(p.offset, p.offset + p.text.length)).toBe(p.text);
+  });
+
+  it("keeps short sentences whole", () => {
     expect(texts("Short, sweet.")).toEqual(["Short, sweet."]);
+    expect(texts("Keep the same time each day if you can.")).toEqual(["Keep the same time each day if you can."]);
   });
 });
 
@@ -191,12 +201,13 @@ describe("kitten engine", () => {
     expect(engine.liveRate).toBe(true);
   });
 
-  it("starts a long sentence that is not ready at its first comma, reporting words at their place in it", async () => {
+  it("starts a long sentence that is not ready with a short opening, reporting words at their place in it", async () => {
     const engine = setup();
     const h = handlers();
     engine.speak(req(LONG), h);
     const [head, tail] = worker.synths();
-    expect([head?.text, tail?.text]).toEqual(splitFirstClause(LONG).map((p) => p.text));
+    expect([head?.text, tail?.text]).toEqual(rampParts(LONG).map((p) => p.text));
+    expect([head?.urgent, tail?.urgent]).toEqual([true, true]);
     audio(head?.id ?? 0, 2, 300, [0, 0.4, 0.8, 1.2, 1.6, 1.9]);
     await flush();
     expect(h.onStart).toHaveBeenCalled();
@@ -262,6 +273,21 @@ describe("kitten engine", () => {
     engine.prepare?.(req("First."));
     expect(worker.sent.map((m) => m.type)).toEqual(["load", "synth"]);
     expect(engine.status().state).toBe("loading");
+  });
+
+  it("warms up the first sentence in the pieces play will use, so pressing play makes nothing new", async () => {
+    const engine = setup();
+    engine.prepare?.(req(LONG));
+    const warmed = worker.synths().map((m) => m.text);
+    expect(warmed).toEqual(rampParts(LONG).map((p) => p.text));
+    expect(worker.synths().every((m) => !m.urgent)).toBe(true);
+    const h = handlers();
+    engine.speak(req(LONG), h);
+    await flush();
+    expect(worker.synths().map((m) => m.text)).toEqual(warmed);
+    audio(worker.synths()[0]?.id ?? 0, 2);
+    await flush();
+    expect(h.onStart).toHaveBeenCalled();
   });
 
   it("holds a clip that arrives while paused until the reader resumes", async () => {

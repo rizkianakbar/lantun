@@ -272,6 +272,19 @@ describe("add-on voice engines", () => {
     expect(s().engine).toEqual({ state: "loading", progress: 0.4 });
   });
 
+  it("restores a saved engine voice that registers after the built-in voices, and warms it up", async () => {
+    localStorage.setItem("lantun:settings", JSON.stringify({ rate: 1, voices: { id: "Bella" } }));
+    const engine = createFakeEngine("kitten", { voices: [hd("Bella")] });
+    const { reader, s } = setup(createFakeDriver({ voices: [voice("Damayanti")] }));
+    await vi.advanceTimersByTimeAsync(300);
+    // The built-in voices answer first: a stand-in until the saved voice is available.
+    expect(s().voice?.id).toBe("Damayanti");
+    reader.addEngine(engine);
+    await vi.advanceTimersByTimeAsync(10);
+    expect(s().voice?.id).toBe("Bella");
+    expect(engine.prepared[0]?.text).toBe("Kalimat pertama di sini.");
+  });
+
   it("hands over to a built-in voice when the engine is too slow, and forgets the choice", async () => {
     const engine = createFakeEngine("kitten", { voices: [hd("Bella")] });
     const { reader, s } = setup(createFakeDriver({ voices: [voice("Damayanti")] }));

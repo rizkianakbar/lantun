@@ -30,7 +30,7 @@ One script tag adds a small dock to your site. Readers press play and hear the a
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/dock.png" alt="The idle dock on the right edge, showing a 2 minute listening time"></td>
+    <td width="50%"><img src="docs/screenshots/dock.png" alt="The idle dock on the right edge, its play button showing a one-minute listening time"></td>
     <td width="50%"><img src="docs/screenshots/voice.png" alt="The voice picker with lifelike and built-in voices"></td>
   </tr>
   <tr>
@@ -39,7 +39,7 @@ One script tag adds a small dock to your site. Readers press play and hear the a
   </tr>
   <tr>
     <td><img src="docs/screenshots/accessibility.png" alt="The reading aids panel with the Dyslexia profile on"></td>
-    <td><img src="docs/screenshots/dark-mode.png" alt="An article in dark mode with the highlight still in the brand colour"></td>
+    <td><img src="docs/screenshots/dark-mode.png" alt="A dark page being read aloud, with the highlight still in the brand colour"></td>
   </tr>
   <tr>
     <td><b>Reading aids.</b> Text size, line height, letter spacing, readable and dyslexia fonts, colour modes, grayscale, highlighted links, big cursor, reading guide and mask, paused animations, hidden images.</td>

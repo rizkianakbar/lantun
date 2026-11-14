@@ -60,6 +60,7 @@ test("docks in the middle of the right edge, and can be dragged", async ({ page 
   await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
   await page.mouse.down();
   await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2 + 120, { steps: 5 });
+  await page.waitForTimeout(150); // a careful drop: the pointer rests before letting go, so no fling
   await page.mouse.up();
   await page.waitForTimeout(400); // glide into place
   const moved = await rail.boundingBox();
@@ -76,6 +77,7 @@ test("docks in the middle of the right edge, and can be dragged", async ({ page 
   await page.mouse.move(g2.x + g2.width / 2, g2.y + g2.height / 2);
   await page.mouse.down();
   await page.mouse.move(400, g2.y + g2.height / 2, { steps: 8 });
+  await page.waitForTimeout(150);
   await page.mouse.up();
   await page.waitForTimeout(400);
   const free = await rail.boundingBox();
@@ -84,6 +86,7 @@ test("docks in the middle of the right edge, and can be dragged", async ({ page 
     -1,
   );
   await widget(page, '[data-lt="ax"]').click();
+  await page.waitForTimeout(300); // panels grow out of the dock; measure where they settle
   const panel = await widget(page, ".panel").boundingBox();
   expect(panel?.x).toBeGreaterThan((free?.x ?? 0) + (free?.width ?? 0));
   await page.keyboard.press("Escape");
@@ -94,14 +97,39 @@ test("docks in the middle of the right edge, and can be dragged", async ({ page 
   await page.mouse.move(g3.x + g3.width / 2, g3.y + g3.height / 2);
   await page.mouse.down();
   await page.mouse.move(640, (viewport?.height ?? 720) - 20, { steps: 8 });
+  await page.waitForTimeout(150);
   await page.mouse.up();
   await page.waitForTimeout(400);
   await expect(rail).toHaveAttribute("data-o", "h");
   const flat = await rail.boundingBox();
   expect((viewport?.height ?? 0) - ((flat?.y ?? 0) + (flat?.height ?? 0))).toBeCloseTo(12, 0);
   await widget(page, '[data-lt="ax"]').click();
+  await page.waitForTimeout(300);
   const above = await widget(page, ".panel").boundingBox();
   expect((above?.y ?? 0) + (above?.height ?? 0)).toBeLessThanOrEqual((flat?.y ?? 0) - 11);
+});
+
+test("a flick throws the dock to the edge it heads for", async ({ page }) => {
+  await page.goto("/fixtures/en-news-flood.html");
+  const rail = widget(page, ".dock");
+  await rail.waitFor();
+  await page.waitForTimeout(500);
+  const grip = await widget(page, ".grip").boundingBox();
+  if (!grip) throw new Error("no grip");
+  const x = grip.x + grip.width / 2;
+  const y = grip.y + grip.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  // A short, fast throw to the left that ends mid-screen; momentum carries it the rest of the way.
+  for (let i = 1; i <= 6; i++) {
+    await page.mouse.move(x - i * 60, y);
+    await page.waitForTimeout(16);
+  }
+  await page.mouse.up();
+  await page.waitForTimeout(600);
+  const box = await rail.boundingBox();
+  expect(box?.x).toBeCloseTo(12, 0);
+  await expect(widget(page, ".lt")).toHaveAttribute("data-side", "left");
 });
 
 test("keyboard only: play, pause, skip, open and close panels", async ({ page }) => {

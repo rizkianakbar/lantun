@@ -1,6 +1,7 @@
 // Silent stand-in for speechSynthesis, injected before page scripts run. Real voices are
 // unavailable (and audible) in CI; this fires the same events on a fast timer.
-export const installSpeechStub = ({ boundaries = true, wordMs = 25 } = {}): void => {
+// `voices` (names, all en-US) lets the screenshots show a realistic voice menu.
+export const installSpeechStub = ({ boundaries = true, wordMs = 25, voices = ["Stub"] } = {}): void => {
   type Utter = {
     text: string;
     rate: number;
@@ -13,15 +14,14 @@ export const installSpeechStub = ({ boundaries = true, wordMs = 25 } = {}): void
     speaking: false,
     pending: false,
     paused: false,
-    getVoices: () => [
-      {
-        name: "Stub",
+    getVoices: () =>
+      voices.map((name, i) => ({
+        name,
         lang: "en-US",
-        voiceURI: "stub",
+        voiceURI: name.toLowerCase(),
         localService: true,
-        default: true,
-      },
-    ],
+        default: i === 0,
+      })),
     speak(u: Utter) {
       synth.speaking = true;
       const spy = window as unknown as { __spoken?: string[] };

@@ -6,7 +6,7 @@ export const UI_CSS = `
   --bg:#161513;--bg2:#201e1b;--bg3:#2c2a26;--ln:rgba(255,244,228,.08);--ln2:rgba(255,244,228,.16);
   --tx:#f7f4ee;--mu:#aba69c;--hv:rgba(255,244,228,.07);
   --sh:0 1px 2px rgba(0,0,0,.2),0 18px 44px -10px rgba(0,0,0,.5);
-  --ease:cubic-bezier(.2,.8,.2,1);--out:cubic-bezier(.4,0,1,1);
+  --ease:cubic-bezier(.23,1,.32,1);--drawer:cubic-bezier(.32,.72,0,1);
   --gap:12px;--cell:32px;--pad:4px;--rw:calc(var(--cell) + var(--pad)*2);--dx:16px;--dy:0px;--safe:env(safe-area-inset-bottom,0px);color-scheme:dark;
   font:400 14px/1.4 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   color:var(--tx);letter-spacing:normal;word-spacing:normal;text-align:left;text-transform:none;
@@ -19,7 +19,7 @@ export const UI_CSS = `
 /* Resets wrapped in :where() so they carry zero specificity and never beat component rules. */
 :where(.lt) :where(button,input,h2,h3,p){font:inherit;color:inherit;letter-spacing:inherit;margin:0}
 :where(.lt) button{background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;transition:background-color .15s,color .15s,border-color .15s,transform .16s var(--ease),opacity .15s}
-:where(.lt) button:where(:active:not(:disabled)){transform:scale(.94)}
+:where(.lt) button:where(:active:not(:disabled)){transform:scale(.96)}
 :where(.lt) button:where(:disabled){cursor:default}
 .lt :focus{outline:none}
 .lt :focus-visible{outline:2px solid #fff;outline-offset:0;box-shadow:0 0 0 4px #0b0b0d}
@@ -33,19 +33,21 @@ export const UI_CSS = `
 @media (hover:hover){.ghost:not(:disabled):hover,.opt:hover{background:var(--hv)}}
 
 /* Dock: the listening rail and, set apart, the reading-aids puck. Placed in px by useDockPlacement
-   (0 and 1 sit flush on an edge); upright on a side, flat along the top or bottom. After a drag it
-   glides to its resting place instead of jumping. */
-.dock{position:fixed;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;animation:lt-in .36s var(--ease) both}
-.dock[data-ready]{transition:left .32s var(--ease),top .32s var(--ease)}
+   (0 and 1 sit flush on an edge); upright on a side, flat along the top or bottom. Dragging and the
+   glide after a drop move it with translate only, so they never re-lay out the page. */
+.dock{position:fixed;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;animation:lt-in .3s var(--ease) both}
 .dock[data-o=h]{flex-direction:row}
-.dock[data-drag]{transition:none}
-.dock[data-leave]{animation:lt-out .16s var(--out) both}
+.dock[data-drag]{will-change:translate}
+.dock[data-leave]{animation:lt-out .16s var(--ease) both}
 .dock[data-leave] *{pointer-events:none!important}
 /* Every control in the rail is one --cell square on the same grid, with --pad all round, so the
    spacing is identical between icons and at both ends, upright or flat. */
 .rail{width:var(--rw);padding:var(--pad) 0;border-radius:calc(var(--rw)/2);display:flex;flex-direction:column;align-items:center}
 .dock[data-o=h] .rail{width:auto;height:var(--rw);padding:0 var(--pad);flex-direction:row}
 .rail .ghost,.grip,.playwrap,.time,.speed,.hide{width:var(--cell);height:var(--cell);flex:none}
+/* The puck is a button: it keeps the button transitions and adds the shadow's. */
+.rail{transition:box-shadow .2s var(--ease)}
+.puck{transition:background-color .15s,transform .16s var(--ease),box-shadow .2s var(--ease)}
 .dock[data-drag] .rail,.dock[data-drag] .puck{box-shadow:0 1px 2px rgba(0,0,0,.2),0 26px 60px -12px rgba(0,0,0,.6)}
 /* The handle's dots run across the dock, so it reads as a grip and not as more content. */
 .grip{display:grid;place-items:center;color:var(--mu);opacity:.6;cursor:grab;touch-action:none;transition:opacity .15s}
@@ -53,8 +55,8 @@ export const UI_CSS = `
 @media (hover:hover){.grip:hover{opacity:1}}
 .dock[data-drag] .grip{cursor:grabbing;opacity:1}
 /* Session-only controls unfold instead of popping in, so the dock grows smoothly. */
-.xtra{display:flex;flex:none;max-height:var(--cell);max-width:var(--cell);overflow:hidden;transition:max-height .34s var(--ease),max-width .34s var(--ease),opacity .22s .1s}
-.rail:not([data-active]) .xtra{opacity:0;visibility:hidden;transition:max-height .3s var(--ease),max-width .3s var(--ease),opacity .1s,visibility 0s .3s}
+.xtra{display:flex;flex:none;max-height:var(--cell);max-width:var(--cell);overflow:hidden;transition:max-height .28s var(--ease),max-width .28s var(--ease),opacity .2s .08s}
+.rail:not([data-active]) .xtra{opacity:0;visibility:hidden;transition:max-height .24s var(--ease),max-width .24s var(--ease),opacity .1s,visibility 0s .24s}
 .dock[data-o=v] .rail:not([data-active]) .xtra{max-height:0}
 .dock[data-o=h] .rail:not([data-active]) .xtra{max-width:0}
 .playwrap{position:relative;display:grid;place-items:center}
@@ -91,6 +93,7 @@ export const UI_CSS = `
   .dock [data-tip]::after{content:attr(data-tip);position:absolute;top:50%;right:calc(100% + 14px);padding:6px 10px;border-radius:9px;background:var(--bg);border:1px solid var(--ln2);box-shadow:var(--sh);color:var(--tx);font-size:12.5px;font-weight:500;letter-spacing:0;white-space:nowrap;pointer-events:none;opacity:0;transform:translate(4px,-50%);transition:opacity .12s,transform .15s var(--ease)}
   .dock [data-tip]{position:relative}
   .dock [data-tip]:hover::after{opacity:1;transform:translate(0,-50%);transition-delay:.4s}
+  .dock[data-warm] [data-tip]:hover::after{transition-delay:0s;transition-duration:0s}
   .lt[data-side=left] .dock [data-tip]::after{right:auto;left:calc(100% + 14px);transform:translate(-4px,-50%)}
   .lt[data-side=left] .dock [data-tip]:hover::after{transform:translate(0,-50%)}
   .lt[data-side=bottom] .dock [data-tip]::after,.lt[data-side=top] .dock [data-tip]::after{right:auto;left:50%;top:auto;bottom:calc(100% + 14px);transform:translate(-50%,4px)}
@@ -106,13 +109,13 @@ export const UI_CSS = `
 .lt[data-side=top] .tab{bottom:auto;top:0;border-radius:0 0 14px 14px;border-top:0;border-bottom:1px solid var(--ln)}
 .tab:active{transform:translateY(-50%)}
 .lt[data-side=bottom] .tab:active,.lt[data-side=top] .tab:active{transform:translateX(-50%)}
-.tab[data-leave]{animation:lt-tab-out .14s var(--out) both;pointer-events:none}
+.tab[data-leave]{animation:lt-tab-out .14s var(--ease) both;pointer-events:none}
 @media (hover:hover){.lt[data-side=left] .tab:hover,.lt[data-side=right] .tab:hover{width:34px}.lt[data-side=bottom] .tab:hover,.lt[data-side=top] .tab:hover{height:34px}}
 
 /* Popovers sit next to the dock (placed by useAnchor) and grow out of it: --px/--py point back
    toward the dock. */
-.pop,.toast{position:fixed;top:var(--top,50%);left:var(--left,auto);animation:lt-pop .22s var(--ease) both}
-.pop[data-leave],.toast[data-leave]{animation:lt-pop-out .14s var(--out) both;pointer-events:none}
+.pop,.toast{position:fixed;top:var(--top,50%);left:var(--left,auto);transform-origin:var(--origin,center);animation:lt-pop .2s var(--ease) both}
+.pop[data-leave],.toast[data-leave]{animation:lt-pop-out .14s var(--ease) both;pointer-events:none}
 .pop{width:min(320px,calc(100% - 24px));max-height:calc(100% - 24px);border-radius:20px;display:flex;flex-direction:column}
 .speedpop{width:min(300px,calc(100% - 24px));padding:16px 16px 14px}
 .label{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;font-weight:600;color:var(--mu);margin-bottom:8px}
@@ -145,7 +148,7 @@ export const UI_CSS = `
 .opt .n{flex:1;min-width:0}
 .opt .n b{display:block;font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .opt .sub{display:block;font-size:12px;color:var(--mu);margin-top:1px}
-.opt .tick{color:var(--a);opacity:0;transform:scale(.6);transition:opacity .15s,transform .2s var(--ease)}
+.opt .tick{color:var(--a);opacity:0;transform:scale(.8);transition:opacity .15s,transform .2s var(--ease)}
 .opt[aria-checked=true] .tick{opacity:1;transform:none}
 .tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:5px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;vertical-align:1px;color:var(--a);background:color-mix(in srgb,var(--a) 16%,transparent)}
 .empty,.tip{font-size:12.5px;color:var(--mu);line-height:1.5}
@@ -189,8 +192,8 @@ export const UI_CSS = `
 .tile svg{color:var(--mu);transition:color .15s}
 .tile[aria-checked=true],.tile[data-on]{background:color-mix(in srgb,var(--a) 15%,var(--bg2));border-color:color-mix(in srgb,var(--a) 65%,transparent)}
 .tile[aria-checked=true] svg,.tile[data-on] svg{color:var(--a)}
-.tile .ck{position:absolute;top:7px;right:7px;width:16px;height:16px;border-radius:50%;background:var(--a);color:var(--ai);display:grid;place-items:center;transform:scale(0);transition:transform .18s var(--ease)}
-.tile[aria-checked=true] .ck{transform:scale(1)}
+.tile .ck{position:absolute;top:7px;right:7px;width:16px;height:16px;border-radius:50%;background:var(--a);color:var(--ai);display:grid;place-items:center;opacity:0;transform:scale(.5);transition:opacity .12s,transform .18s var(--ease)}
+.tile[aria-checked=true] .ck{opacity:1;transform:none}
 .tile .ck svg{color:inherit;stroke-width:3.2}
 .tl{display:flex;flex-direction:column;align-items:center;gap:6px}
 /* Text tiles sit two to a row, so they lie flat to keep the panel short. */
@@ -228,7 +231,7 @@ export const UI_CSS = `
 .on .bars i:nth-child(4){animation-delay:-.6s;animation-duration:.8s}
 
 /* Play from here */
-.here{position:fixed;top:0;left:0;width:28px;height:28px;border-radius:50%;background:var(--a);color:var(--ai);display:grid;place-items:center;box-shadow:0 4px 12px -2px rgba(0,0,0,.35);pointer-events:auto;opacity:0;transform:scale(.6);transition:opacity .15s,transform .18s var(--ease)}
+.here{position:fixed;top:0;left:0;width:28px;height:28px;border-radius:50%;background:var(--a);color:var(--ai);display:grid;place-items:center;box-shadow:0 4px 12px -2px rgba(0,0,0,.35);pointer-events:auto;opacity:0;transform:scale(.85);transition:opacity .15s,transform .18s var(--ease)}
 .here.on{opacity:1;transform:scale(1)}
 .selchip{position:fixed;top:0;left:0;height:34px;padding:0 13px 0 9px;border-radius:999px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;animation:lt-in-soft .2s var(--ease) both}
 .selchip .disc{width:20px;height:20px;border-radius:50%;background:var(--a);color:var(--ai);display:grid;place-items:center}
@@ -243,12 +246,12 @@ export const UI_CSS = `
 @keyframes lt-tab-out{to{opacity:0}}
 @keyframes lt-pop{from{opacity:0;transform:translate(var(--px,0px),var(--py,0px)) scale(.97)}}
 @keyframes lt-pop-out{to{opacity:0;transform:translate(calc(var(--px,0px)*.6),calc(var(--py,0px)*.6)) scale(.98)}}
-@keyframes lt-sheet{from{opacity:0;transform:translateY(24px)}}
+@keyframes lt-sheet{from{opacity:0;transform:translateY(32px)}}
 @keyframes lt-sheet-out{to{opacity:0;transform:translateY(16px)}}
 @keyframes lt-in-soft{from{opacity:0;transform:translateY(8px) scale(.97)}}
-@keyframes lt-swap{from{opacity:0;transform:scale(.7)}}
+@keyframes lt-swap{from{opacity:0;transform:scale(.8);filter:blur(2px)}}
 @keyframes lt-fade{from{opacity:0}}
-@keyframes lt-pop-dot{from{transform:scale(0)}}
+@keyframes lt-pop-dot{from{opacity:0;transform:scale(.5)}}
 @keyframes lt-bar{to{transform:scaleY(1)}}
 @keyframes lt-breathe{50%{opacity:.45}}
 
@@ -259,7 +262,7 @@ export const UI_CSS = `
   .grip{display:none}
   .speed,.time{font-size:11px}
   .puck{border-radius:16px}
-  .pop,.toast{top:auto;bottom:calc(8px + var(--safe));left:8px;right:8px;width:auto;max-width:none;transform-origin:center bottom;animation-name:lt-sheet}
+  .pop,.toast{top:auto;bottom:calc(8px + var(--safe));left:8px;right:8px;width:auto;max-width:none;transform-origin:center bottom;animation:lt-sheet .32s var(--drawer) both}
   .pop[data-leave],.toast[data-leave]{animation-name:lt-sheet-out}
   .pop{max-height:min(80vh,640px);border-radius:24px}
 }

@@ -1,5 +1,5 @@
 import type { Voice } from "@lantun/core";
-import { CLAUSE, DOWNLOAD_BYTES, GENDER, MIN_PIECE, SPLIT_MIN, VOICE_NAMES } from "./engine.constants";
+import { CLAUSE, CLAUSE_REACH, DOWNLOAD_BYTES, GENDER, GROWTH, OPENING_CHARS, VOICE_NAMES } from "./engine.constants";
 import type { ClipEntry, EngineNavigator, EngineWindow, KittenVoiceName, Part } from "./engine.types";
 
 // Same switch as core: localStorage.setItem('lantun:debug', '1').
@@ -64,24 +64,46 @@ export function canRun(win: EngineWindow = window): boolean {
   );
 }
 
-// Whole sentences sound best, so only a long sentence that is not ready yet is split, after its
-// first clause, so its first words play sooner.
-export function splitFirstClause(text: string): Part[] {
-  if (text.length < SPLIT_MIN) return [{ text, offset: 0 }];
+// Where a piece of up to `size` characters from `start` ends: the last natural pause within reach,
+// else the last space, else (one very long word) the next space. -1 when the text runs out first.
+function cutAt(text: string, start: number, size: number): number {
+  const half = start + size / 2;
+  const reach = text.slice(start, start + Math.round(size * CLAUSE_REACH) + 1);
+  let pause = -1;
 
-  for (const m of text.matchAll(CLAUSE)) {
-    const end = (m.index ?? 0) + 1;
+  for (const m of reach.matchAll(CLAUSE)) {
+    const end = start + (m.index ?? 0) + 1;
 
-    if (end < MIN_PIECE) continue;
-    if (end > text.length - MIN_PIECE) break;
-
-    const rest = text.slice(end).trimStart();
-
-    return [
-      { text: text.slice(0, end), offset: 0 },
-      { text: rest, offset: text.length - rest.length },
-    ];
+    if (end > half) pause = end;
   }
 
-  return [{ text, offset: 0 }];
+  if (pause > 0) return pause;
+
+  const space = text.lastIndexOf(" ", start + size);
+
+  return space > half ? space : text.indexOf(" ", start + size);
+}
+
+// Whole sentences sound best, but waiting for a long one to be made is the slowest part of pressing
+// play. A sentence that is not ready yet therefore starts with a short opening, and each later
+// piece grows, so it is made while the one before it plays.
+export function rampParts(text: string): Part[] {
+  const parts: Part[] = [];
+  let start = 0;
+  let size = OPENING_CHARS;
+
+  while (text.length - start > size * GROWTH) {
+    const end = cutAt(text, start, size);
+
+    if (end <= start) break;
+
+    parts.push({ text: text.slice(start, end).trimEnd(), offset: start });
+    start = end;
+    while (/\s/.test(text[start] ?? "")) start++;
+    size = Math.round(size * GROWTH);
+  }
+
+  parts.push({ text: text.slice(start), offset: start });
+
+  return parts;
 }

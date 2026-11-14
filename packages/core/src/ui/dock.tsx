@@ -1,8 +1,9 @@
 import type { RefObject } from "preact";
+import { useEffect, useRef } from "preact/hooks";
 import type { Reader, ReaderState } from "../reader/reader.types";
 import { describeVoice } from "../voices/voices.lib";
 import { AccessIcon, ChevronIcon, GripIcon, PauseIcon, PlayIcon, SkipIcon, VoiceIcon } from "./icons";
-import { RING } from "./ui.constants";
+import { RING, TIP_WARM_MS } from "./ui.constants";
 import { useCountdown, useDockPlacement, useDrag } from "./ui.hooks";
 import { clock, fmt, formatRate, type Strings } from "./ui.i18n";
 import { hideDir, leaveAttr } from "./ui.lib";
@@ -35,6 +36,27 @@ export function Dock(props: DockProps) {
   const startDrag = useDrag(props.dockRef, place.o, () => props.onOpen(null), props.onMove);
 
   useDockPlacement(props.dockRef, place.x, place.y, [place.o, axOn === null]);
+
+  // The first tooltip waits, so passing over the dock opens nothing. Once the reader has rested on
+  // it, the next ones open at once as they move between buttons. The grace on leave covers the gap
+  // between the rail and the puck.
+  const warm = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => () => clearTimeout(warm.current), []);
+
+  function warmTips(on: boolean): void {
+    clearTimeout(warm.current);
+    warm.current = setTimeout(
+      () => {
+        const el = props.dockRef.current;
+
+        if (!el) return;
+        if (on) el.dataset.warm = "";
+        else delete el.dataset.warm;
+      },
+      on ? TIP_WARM_MS : 300,
+    );
+  }
 
   const playing = state.status === "playing";
   const active = playing || state.status === "paused";
@@ -94,7 +116,14 @@ export function Dock(props: DockProps) {
   }
 
   return (
-    <div class="dock" ref={props.dockRef} data-o={place.o} data-leave={leaveAttr(props.leaving)}>
+    <div
+      class="dock"
+      ref={props.dockRef}
+      data-o={place.o}
+      data-leave={leaveAttr(props.leaving)}
+      onPointerEnter={(e) => e.pointerType === "mouse" && warmTips(true)}
+      onPointerLeave={() => warmTips(false)}
+    >
       <div
         class="rail surface"
         role="region"

@@ -34,6 +34,20 @@ export const EDGE = 12;
 export const GAP = 12;
 // Released this close to a side, the dock snaps flush against it.
 export const SNAP = 80;
+// A drag released within this long of its last move keeps the pointer's momentum: a flick throws
+// the dock, a careful drop leaves it where it is.
+export const FLING_WINDOW_MS = 80;
+// Released faster than this (px/ms), the drag was a throw: the dock lands on the edge it heads for.
+export const FLING_MIN_SPEED = 0.6;
+// How far along that edge a throw carries: release velocity (px/ms) × this, iOS's deceleration.
+export const FLING_PROJECT_MS = 330;
+// Dragged past the viewport edge, the dock follows with growing resistance up to this many px.
+export const RUBBER_PX = 48;
+// The settle after a drop or a reset: Ionic's drawer curve, which reads as a damped spring.
+export const GLIDE_MS = 420;
+export const GLIDE_EASE = "cubic-bezier(.32,.72,0,1)";
+// Pointer time on the dock before tooltips open instantly as it moves between buttons.
+export const TIP_WARM_MS = 400;
 export const NARROW_PLACE: DockPlace = { x: 0.5, y: 1, o: "h" };
 
 // The hidden tab's chevron points out of its edge, toward where the dock comes back.

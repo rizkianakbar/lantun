@@ -62,8 +62,13 @@ export const JUDGE_AFTER = 3;
 export const MIN_JUDGED_SECONDS = 0.5;
 // Clips kept for prefetch and for replaying after prev/seek.
 export const CACHE_CLIPS = 10;
-// Sentences shorter than this are never split.
-export const SPLIT_MIN = 90;
-export const MIN_PIECE = 25;
+// A sentence that is not ready yet starts with an opening this long (about 1 s to make) and each
+// next piece is GROWTH times longer: synthesis costs ~0.4 s per clip plus under 0.5 s per second
+// of audio, so every piece is ready before the one before it ends. Sentences under
+// OPENING_CHARS × GROWTH stay whole.
+export const OPENING_CHARS = 28;
+export const GROWTH = 1.6;
+// A natural pause this far past a piece's length is still worth cutting at.
+export const CLAUSE_REACH = 1.3;
 export const CLAUSE = /[,;:—](?=\s)/g;
 export const WORD_TICK_MS = 30;

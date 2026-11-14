@@ -2,7 +2,20 @@ import { useEffect, useLayoutEffect, useRef, useState } from "preact/hooks";
 import type { Store } from "../lib/store";
 import type { ReaderState } from "../reader/reader.types";
 import { EDGE, GAP } from "./ui.constants";
-import { clamp, dropDock, layoutBox, offsetIn, placeDock, prefersReducedMotion, viewport } from "./ui.lib";
+import {
+  clamp,
+  flingDock,
+  glide,
+  layoutBox,
+  offsetIn,
+  placeDock,
+  prefersReducedMotion,
+  releaseVelocity,
+  rubberBand,
+  type Sample,
+  takeShift,
+  viewport,
+} from "./ui.lib";
 import type { DockPlace, ElementRef, Orientation, Presence } from "./ui.types";
 
 export function useStore<T extends object>(store: Store<T>): T {
@@ -97,7 +110,8 @@ export function useCountdown(state: ReaderState): number {
   return Math.max(state.remainingAfter, state.remaining - (now - since.current) / 1000);
 }
 
-// Re-places the dock on resize and as it grows or shrinks, so it grows around its centre.
+// Re-places the dock on resize and as it grows or shrinks, so it grows around its centre. A new
+// spot (a drop, a reset) glides there from wherever the dock is drawn.
 export function useDockPlacement(ref: ElementRef, x: number, y: number, deps: unknown[]): void {
   useLayoutEffect(() => {
     const el = ref.current;
@@ -108,7 +122,18 @@ export function useDockPlacement(ref: ElementRef, x: number, y: number, deps: un
       if (el && !("drag" in el.dataset)) placeDock(el, x, y);
     }
 
+    // Mid-drag the pointer owns the dock; the drop places it.
+    const settled = !("drag" in el.dataset);
+    const from = settled && "ready" in el.dataset ? layoutBox(el) : null;
+    const shift = settled ? takeShift(el) : { x: 0, y: 0 };
+
     place();
+
+    if (from) {
+      const to = layoutBox(el);
+
+      glide(el, from.left + shift.x - to.left, from.top + shift.y - to.top);
+    }
 
     // Glide only between placements, never from the unplaced (0, 0) of the first frame.
     const ready = requestAnimationFrame(() => {
@@ -169,11 +194,17 @@ export function useAnchor(panel: ElementRef, anchor: ElementRef): void {
     }
 
     top = Math.round(clamp(top, EDGE, vh - h - EDGE));
+    left = Math.round(clamp(left, EDGE, vw - w - EDGE));
     el.dataset.top = String(top);
     el.style.setProperty("--top", `${top}px`);
-    el.style.setProperty("--left", `${Math.round(clamp(left, EDGE, vw - w - EDGE))}px`);
+    el.style.setProperty("--left", `${left}px`);
     el.style.setProperty("--px", `${px}px`);
     el.style.setProperty("--py", `${py}px`);
+    // Grow out of the button that opened it: the edge facing the dock, level with that button.
+    const ox = flat ? `${Math.round(r.left + r.width / 2 - left)}px` : px > 0 ? "100%" : "0%";
+    const oy = flat ? (py > 0 ? "100%" : "0%") : `${Math.round(r.top + r.height / 2 - top)}px`;
+
+    el.style.setProperty("--origin", `${ox} ${oy}`);
   }
 
   // Every render: content may have changed size.
@@ -191,7 +222,9 @@ export function useAnchor(panel: ElementRef, anchor: ElementRef): void {
   }, []);
 }
 
-// The dock follows the pointer directly and the drop is committed once, so dragging never re-renders.
+// The dock follows the pointer on the compositor (translate, no layout), rubber-bands past the
+// edges, and keeps a flick's momentum: the drop lands where the throw would carry it. The drop is
+// committed once, so dragging never re-renders.
 export function useDrag(
   target: ElementRef,
   o: Orientation,
@@ -205,38 +238,64 @@ export function useDrag(
   return function startDrag(e: PointerEvent): void {
     const el = target.current;
 
-    if (!el || e.button !== 0) return;
+    // One pointer at a time: a second finger mid-drag would make the dock jump to it.
+    if (!el || e.button !== 0 || "drag" in el.dataset) return;
 
     e.preventDefault();
 
     const handle = e.currentTarget as HTMLElement;
-    const rect = el.getBoundingClientRect();
-    let cx = rect.left + rect.width / 2;
-    let cy = rect.top + rect.height / 2;
+    // A grab mid-glide continues from where the dock is drawn, not from where it was heading.
+    const shift = takeShift(el);
+    const box = layoutBox(el);
+    const left0 = box.left;
+    const top0 = box.top;
+    const { width: vw, height: vh } = viewport();
+    let cx = left0 + shift.x + box.width / 2;
+    let cy = top0 + shift.y + box.height / 2;
     // Keep the grab point under the pointer instead of jumping the dock's centre to it.
     const dx = cx - e.clientX;
     const dy = cy - e.clientY;
+    const samples: Sample[] = [{ t: e.timeStamp, x: e.clientX, y: e.clientY }];
+
+    function draw(): void {
+      const left = rubberBand(cx - box.width / 2, EDGE, vw - EDGE - box.width);
+      const top = rubberBand(cy - box.height / 2, EDGE, vh - EDGE - box.height);
+
+      (el as HTMLElement).style.translate = `${left - left0}px ${top - top0}px`;
+    }
 
     function move(ev: PointerEvent): void {
       cx = ev.clientX + dx;
       cy = ev.clientY + dy;
-      const { width, height } = viewport();
-
-      placeDock(el as HTMLElement, cx / width, cy / height);
+      samples.push({ t: ev.timeStamp, x: ev.clientX, y: ev.clientY });
+      if (samples.length > 8) samples.shift();
+      draw();
     }
 
-    function up(): void {
+    function up(ev: PointerEvent): void {
       handle.removeEventListener("pointermove", move);
       handle.removeEventListener("pointerup", up);
       handle.removeEventListener("pointercancel", up);
       delete (el as HTMLElement).dataset.drag;
+
+      const v = ev.type === "pointerup" ? releaseVelocity(samples, ev.timeStamp) : { vx: 0, vy: 0 };
       const { width, height } = viewport();
 
-      latest.current.onEnd(dropDock(cx, cy, latest.current.o, width, height));
+      latest.current.onEnd(flingDock(cx, cy, v, latest.current.o, width, height));
+
+      // A drop on the spot it started from changes no props, so nothing re-places it: settle here.
+      requestAnimationFrame(() => {
+        if (!el || "drag" in el.dataset || !el.style.translate) return;
+
+        const rest = takeShift(el);
+
+        glide(el, rest.x, rest.y);
+      });
     }
 
     handle.setPointerCapture?.(e.pointerId);
     el.dataset.drag = "";
+    el.style.translate = `${shift.x}px ${shift.y}px`;
     latest.current.onStart();
     handle.addEventListener("pointermove", move);
     handle.addEventListener("pointerup", up);

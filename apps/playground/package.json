@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test",
-    "live-check": "playwright test -c playwright.live.config.ts"
+    "live-check": "playwright test -c playwright.live.config.ts",
+    "screenshots": "playwright test -c playwright.shots.config.ts"
   },
   "dependencies": {
     "@lantun/core": "workspace:*",

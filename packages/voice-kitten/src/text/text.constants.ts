@@ -9,7 +9,6 @@ export const SYMBOLS = [
 ];
 // Later duplicates win, as in the Python dict this mirrors.
 export const IDS = new Map(SYMBOLS.map((s, i) => [s, i]));
-export const SYMBOL_COUNT = SYMBOLS.length;
 
 // Python's re.findall(r"\w+|[^\w\s]") with Unicode \w, then joined by spaces.
 export const TOKENS = /[\p{L}\p{M}\p{N}_]+|[^\p{L}\p{M}\p{N}_\s]/gu;

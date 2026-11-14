@@ -98,7 +98,8 @@ async function load(src: Sources): Promise<Runtime> {
     fetchCached(src.model),
     fetchCached(src.ortWasm),
     fetchCached(src.voices).then(readNpz),
-    fetch(src.config).then((r) => r.json() as Promise<KittenConfig>),
+    // Cached like the rest: fetched fresh, it cost a round trip to the model host on every page.
+    fetchCached(src.config).then((buf) => JSON.parse(new TextDecoder().decode(buf)) as KittenConfig),
   ]);
 
   // Handing over the binary we already cached stops the runtime downloading it a second time.
@@ -213,10 +214,14 @@ function onMessage(e: MessageEvent<ToWorker>): void {
       pump();
       return;
 
-    case "synth":
-      queue.push(msg);
+    case "synth": {
+      // Urgent jobs keep their order among themselves, ahead of every prefetch.
+      const at = msg.urgent ? queue.findIndex((job) => !job.urgent) : -1;
+
+      queue.splice(at < 0 ? queue.length : at, 0, msg);
       pump();
       return;
+    }
 
     case "drop": {
       // The engine has already forgotten these; just do not spend time on them.

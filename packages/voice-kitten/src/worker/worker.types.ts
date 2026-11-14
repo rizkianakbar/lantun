@@ -17,7 +17,8 @@ export interface Sources {
 export type ToWorker =
   | { type: "load"; sources: Sources }
   // speed is the model's own speed input: 1 is the voice's natural pace.
-  | { type: "synth"; id: number; text: string; voice: string; speed: number }
+  // urgent: the reader is waiting for it, so it goes ahead of prefetched sentences.
+  | { type: "synth"; id: number; text: string; voice: string; speed: number; urgent: boolean }
   // Skip queued jobs that are no longer wanted (the reader skipped ahead). The engine settles
   // their promises itself, so nothing is sent back for them.
   | { type: "drop"; keep: number[] };

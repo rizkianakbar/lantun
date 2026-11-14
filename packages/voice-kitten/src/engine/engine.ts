@@ -13,7 +13,7 @@ import {
   VOICE_NAMES,
   WORD_TICK_MS,
 } from "./engine.constants";
-import { canRun, debug, ignore, keyOf, nameOf, revoke, splitFirstClause, toVoice, wordOffsets } from "./engine.lib";
+import { canRun, debug, ignore, keyOf, nameOf, rampParts, revoke, toVoice, wordOffsets } from "./engine.lib";
 import type { Clip, ClipEntry, EngineWindow, KittenOptions, PartClip, Pending } from "./engine.types";
 
 export function createKittenEngine(
@@ -43,6 +43,8 @@ export function createKittenEngine(
   // after speak() (the player prefetches the next sentences in the same task).
   let wanted: Set<number> | null = null;
   let startWhenResumed: (() => void) | null = null;
+  // While an utterance plays, prepare() is the player looking ahead, not a warm-up.
+  let speaking = false;
 
   function setStatus(next: EngineStatus): void {
     status = next;
@@ -162,7 +164,8 @@ export function createKittenEngine(
     }
   }
 
-  function clipFor(voice: Voice | null, text: string): ClipEntry {
+  // `urgent` clips are what the reader is waiting to hear: the worker makes them before prefetches.
+  function clipFor(voice: Voice | null, text: string, urgent = false): ClipEntry {
     const key = keyOf(voice, text);
     const hit = clips.get(key);
 
@@ -179,7 +182,7 @@ export function createKittenEngine(
     const clip = new Promise<Clip>((resolve, reject) => {
       pending.set(id, { resolve, reject });
       debug(`queue clip ${id}: "${text.slice(0, 40)}"`);
-      send({ type: "synth", id, text, voice: name, speed: PACE[name] });
+      send({ type: "synth", id, text, voice: name, speed: PACE[name], urgent });
     });
     const entry = { id, clip };
 
@@ -191,6 +194,16 @@ export function createKittenEngine(
     evict();
 
     return entry;
+  }
+
+  // A sentence already made (or being made) whole plays whole; otherwise it starts with a short
+  // opening so the first words come quickly.
+  function partsFor(voice: Voice | null, text: string, urgent: boolean): PartClip[] {
+    const whole = clips.get(keyOf(voice, text));
+
+    if (whole) return [{ part: { text, offset: 0 }, ...whole }];
+
+    return rampParts(text).map((part) => ({ part, ...clipFor(voice, part.text, urgent) }));
   }
 
   // The reader moved on: forget unfinished clips for anything else, here and now, so nothing
@@ -315,6 +328,7 @@ export function createKittenEngine(
       const item = parts[i];
 
       if (!item) {
+        speaking = false;
         handlers.onEnd();
         return;
       }
@@ -352,6 +366,7 @@ export function createKittenEngine(
       const el = element();
 
       paused = false;
+      speaking = true;
       rate = req.rate;
 
       // Inside the reader's click: playing anything now lets this element play later.
@@ -373,13 +388,7 @@ export function createKittenEngine(
         return;
       }
 
-      const whole = clips.get(keyOf(req.voice, req.text));
-      const parts: PartClip[] = whole
-        ? [{ part: { text: req.text, offset: 0 }, ...whole }]
-        : splitFirstClause(req.text).map((part) => ({
-            part,
-            ...clipFor(req.voice, part.text),
-          }));
+      const parts = partsFor(req.voice, req.text, true);
       // Drop stale work once the player has also named the sentences it wants next. Dropping
       // at once threw away the next sentence mid-synthesis on every ordinary sentence change,
       // and the reader then waited while it was made again from scratch.
@@ -393,14 +402,17 @@ export function createKittenEngine(
     },
 
     // Only ever called for this engine's voices, so for a reader who chose one: loading is
-    // wanted.
+    // wanted. Before playback it is the sentence play will start on, made in the same pieces
+    // speak() would use; during playback it is a sentence ahead, made whole.
     prepare(req) {
       if (status.state === "error" || !ensureWorker()) return;
 
-      const entry = clipFor(req.voice, req.text);
+      const entries = speaking ? [clipFor(req.voice, req.text)] : partsFor(req.voice, req.text, false);
 
-      wanted?.add(entry.id);
-      entry.clip.catch(ignore);
+      for (const entry of entries) {
+        wanted?.add(entry.id);
+        entry.clip.catch(ignore);
+      }
     },
 
     setRate(next) {
@@ -426,6 +438,7 @@ export function createKittenEngine(
 
     cancel() {
       token++;
+      speaking = false;
       stop();
     },
   };

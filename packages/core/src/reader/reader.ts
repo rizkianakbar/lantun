@@ -257,16 +257,20 @@ export function createReader(
     warmUp();
   }
 
-  // Runs at start and whenever an add-on engine registers; keeps the current voice if still listed.
+  // Runs at start and whenever an add-on engine registers. The reader's saved choice wins once it is
+  // listed: built-in voices usually resolve before an add-on registers, and keeping that stand-in
+  // would lose a saved lifelike voice on every page load. Otherwise the current voice stays.
   function loadVoices(): void {
     driver.getVoices().then(
       (all) => {
         if (destroyed) return;
 
         const voices = listVoices(all, opts.lang);
-        const current = store.get().voice;
+        const { voice: current, status } = store.get();
+        const savedId = settings.voices[lang];
+        const saved = status === "playing" ? undefined : voices.find((v) => v.id === savedId);
         const voice =
-          (current && voices.find((v) => v.id === current.id)) ?? pickVoice(voices, opts.lang, settings.voices[lang]);
+          saved ?? (current && voices.find((v) => v.id === current.id)) ?? pickVoice(voices, opts.lang, savedId);
 
         store.set({ voices, voicesLoaded: true });
         if (!current || voice?.id !== current.id) useVoice(voice);
