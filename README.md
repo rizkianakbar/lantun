@@ -1,5 +1,13 @@
 # Lantun
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/lantun"><img src="https://img.shields.io/npm/v/lantun?label=lantun&color=f5b841" alt="lantun on npm"></a>
+  <a href="https://www.npmjs.com/package/@lantun/core"><img src="https://img.shields.io/npm/v/%40lantun%2Fcore?label=%40lantun%2Fcore&color=f5b841" alt="@lantun/core on npm"></a>
+  <a href="https://www.npmjs.com/package/@lantun/react"><img src="https://img.shields.io/npm/v/%40lantun%2Freact?label=%40lantun%2Freact&color=f5b841" alt="@lantun/react on npm"></a>
+  <a href="https://www.npmjs.com/package/@lantun/voice-kitten"><img src="https://img.shields.io/npm/v/%40lantun%2Fvoice-kitten?label=%40lantun%2Fvoice-kitten&color=f5b841" alt="@lantun/voice-kitten on npm"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licence-MIT-blue" alt="MIT licence"></a>
+</p>
+
 **Turn any article into something people can listen to, and read more comfortably.**
 
 One script tag adds a small dock to your site. Readers press play and hear the article, with each sentence and word highlighted as it is spoken. A second button opens reading aids for low vision, dyslexia, ADHD and more. No account, no backend, no changes to your markup.
