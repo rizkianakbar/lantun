@@ -6,7 +6,7 @@ Lantun adds a small dock to your page. Readers press play and hear the article w
 
 **[Try the live demo →](https://lantun.rzknkbr.xyz)** Open any sample article and press play.
 
-![Lantun reading an article aloud, highlighting the current sentence and word](https://raw.githubusercontent.com/rizkianakbar/lantun/main/docs/screenshots/playing.png)
+<img src="https://raw.githubusercontent.com/rizkianakbar/lantun/v0.1.2/docs/screenshots/playing-dark.png" alt="Lantun reading an article aloud, highlighting the current sentence and word">
 
 ## Install
 
@@ -77,6 +77,27 @@ Turn on debug logs with `localStorage.setItem("lantun:debug", "1")`.
 
 - **No build step?** Use the [`lantun`](https://www.npmjs.com/package/lantun) script tag.
 - **React or Next.js?** Use [`@lantun/react`](https://www.npmjs.com/package/@lantun/react).
+
+## A closer look
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://raw.githubusercontent.com/rizkianakbar/lantun/v0.1.2/docs/screenshots/dock-dark.png" alt="The idle dock on the right edge, its play button showing a one-minute listening time"></td>
+    <td width="50%"><img src="https://raw.githubusercontent.com/rizkianakbar/lantun/v0.1.2/docs/screenshots/voice-dark.png" alt="The voice picker with lifelike and built-in voices"></td>
+  </tr>
+  <tr>
+    <td><b>Quiet until needed.</b> A slim dock shows how long the article takes to hear. Drag it to any edge, or tuck it away.</td>
+    <td><b>Lifelike voices.</b> Natural English voices made on the reader's device, downloaded once and only when chosen.</td>
+  </tr>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/rizkianakbar/lantun/v0.1.2/docs/screenshots/accessibility-dark.png" alt="The reading aids panel with the Dyslexia profile on"></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/rizkianakbar/lantun/v0.1.2/docs/screenshots/mobile-dark.png" width="240" alt="Lantun on a phone, the dock lying flat along the bottom while the headline is read aloud"></td>
+  </tr>
+  <tr>
+    <td><b>Reading aids.</b> Text size, spacing, readable and dyslexia fonts, colour modes, reading guide and mask, and more.</td>
+    <td><b>On phones.</b> The dock lies flat along the bottom, in thumb reach.</td>
+  </tr>
+</table>
 
 ## Links
 

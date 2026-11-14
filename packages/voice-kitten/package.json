@@ -1,6 +1,6 @@
 {
   "name": "@lantun/voice-kitten",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Lifelike, on-device English voices for Lantun, powered by Kitten TTS. Nothing downloads until a reader picks one.",
   "keywords": [
     "text-to-speech",

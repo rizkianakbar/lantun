@@ -6,7 +6,7 @@ One script tag adds a small dock to your site. Readers press play and hear the a
 
 **[Try the live demo →](https://lantun.rzknkbr.xyz)** Open any sample article and press play.
 
-![Lantun reading an article aloud, highlighting the current sentence and word](docs/screenshots/playing.png)
+<img src="docs/screenshots/playing-dark.png" alt="Lantun reading an article aloud, highlighting the current sentence and word">
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/lantun@0.1/dist/widget.js"></script>
@@ -30,22 +30,23 @@ One script tag adds a small dock to your site. Readers press play and hear the a
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/dock.png" alt="The idle dock on the right edge, its play button showing a one-minute listening time"></td>
-    <td width="50%"><img src="docs/screenshots/voice.png" alt="The voice picker with lifelike and built-in voices"></td>
+    <td width="50%"><img src="docs/screenshots/dock-dark.png" alt="The idle dock on the right edge, its play button showing a one-minute listening time"></td>
+    <td width="50%"><img src="docs/screenshots/voice-dark.png" alt="The voice picker with lifelike and built-in voices"></td>
   </tr>
   <tr>
     <td><b>Quiet until needed.</b> A slim dock shows how long the article takes to hear. Drag it to any edge, or tuck it away.</td>
     <td><b>Lifelike voices.</b> Natural English voices generated on the reader's device. They download once (31 MB) and only when a reader picks one.</td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/accessibility.png" alt="The reading aids panel with the Dyslexia profile on"></td>
-    <td><img src="docs/screenshots/dark-mode.png" alt="A dark page being read aloud, with the highlight still in the brand colour"></td>
+    <td><img src="docs/screenshots/accessibility-dark.png" alt="The reading aids panel with the Dyslexia profile on"></td>
+    <td align="center"><img src="docs/screenshots/mobile-dark.png" width="240" alt="Lantun on a phone, the dock lying flat along the bottom while the headline is read aloud"></td>
   </tr>
   <tr>
     <td><b>Reading aids.</b> Text size, line height, letter spacing, readable and dyslexia fonts, colour modes, grayscale, highlighted links, big cursor, reading guide and mask, paused animations, hidden images.</td>
-    <td><b>Any page, any colour mode.</b> Dark, light, high-contrast and inverted modes, with highlights that keep your brand colour.</td>
+    <td><b>On phones.</b> The dock lies flat along the bottom, in thumb reach.</td>
   </tr>
 </table>
+
 
 ## Get started
 
@@ -97,7 +98,7 @@ Good to know:
 
 - **Skip a part of the page:** add `data-reader-skip` to any element.
 - **Strict Content-Security-Policy:** add your `nonce` to the script tag; Lantun reuses it for its styles.
-- **Versions:** `lantun@0.1` gets bug fixes automatically, never breaking changes. Use `lantun@0.1.1` to pin an exact version.
+- **Versions:** `lantun@0.1` gets bug fixes automatically, never breaking changes. Use `lantun@0.1.2` to pin an exact version.
 
 ### JavaScript app
 

@@ -26,64 +26,64 @@ async function listen(page: Page): Promise<void> {
   await page.waitForTimeout(SPEECH.wordMs * 4 + 200);
 }
 
-test("playing", async ({ page }) => {
-  await open(page);
-  await listen(page);
-  // Hovering a paragraph shows the "play from here" button beside it.
-  await page.locator(".lede").hover({ position: { x: 40, y: 20 } });
-  await page.waitForTimeout(300);
-  await page.screenshot({ path: `${DOCS}playing.png` });
-});
+// Every README shot comes in both themes, as the site does: the READMEs show the one that matches
+// the reader's GitHub theme (name.png light, name-dark.png dark).
+for (const scheme of ["light", "dark"] as const) {
+  const shot = (name: string) => `${DOCS}${name}${scheme === "dark" ? "-dark" : ""}.png`;
 
-test("dock", async ({ page }) => {
-  await open(page);
-  await widget(page, '[data-lt="play"]').hover();
-  await page.waitForTimeout(700); // tooltip delay
-  await page.screenshot({ path: `${DOCS}dock.png` });
-});
+  test.describe(scheme, () => {
+    test.use({ colorScheme: scheme });
 
-test("voice", async ({ page }) => {
-  await open(page);
-  await listen(page);
-  await widget(page, '[data-lt="voice"]').click();
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: `${DOCS}voice.png` });
-});
+    test("playing", async ({ page }) => {
+      await open(page);
+      await listen(page);
+      // Hovering a paragraph shows the "play from here" button beside it.
+      await page.locator(".lede").hover({ position: { x: 40, y: 20 } });
+      await page.waitForTimeout(300);
+      await page.screenshot({ path: shot("playing") });
+    });
 
-test("accessibility", async ({ page }) => {
-  await open(page);
-  await widget(page, '[data-lt="ax"]').click();
-  await page.locator("lantun-reader .pchip", { hasText: "Dyslexia" }).click();
-  await page.waitForTimeout(500);
-  await page.screenshot({ path: `${DOCS}accessibility.png` });
-});
+    test("dock", async ({ page }) => {
+      await open(page);
+      await widget(page, '[data-lt="play"]').hover();
+      await page.waitForTimeout(700); // tooltip delay
+      await page.screenshot({ path: shot("dock") });
+    });
 
-test.describe("dark", () => {
-  test.use({ colorScheme: "dark" });
+    test("voice", async ({ page }) => {
+      await open(page);
+      await listen(page);
+      await widget(page, '[data-lt="voice"]').click();
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: shot("voice") });
+    });
 
-  test("dark mode", async ({ page }) => {
-    await open(page);
-    await listen(page);
-    await page.screenshot({ path: `${DOCS}dark-mode.png` });
+    test("accessibility", async ({ page }) => {
+      await open(page);
+      await widget(page, '[data-lt="ax"]').click();
+      await page.locator("lantun-reader .pchip", { hasText: "Dyslexia" }).click();
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: shot("accessibility") });
+    });
+
+    test.describe("phone", () => {
+      // The iPhone 13's screen and touch, in Chromium like the rest.
+      test.use({
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 2,
+        isMobile: true,
+        hasTouch: true,
+        userAgent: devices["iPhone 13"].userAgent,
+      });
+
+      test("mobile", async ({ page }) => {
+        await open(page);
+        await listen(page);
+        await page.screenshot({ path: shot("mobile") });
+      });
+    });
   });
-});
-
-test.describe("phone", () => {
-  // The iPhone 13's screen and touch, in Chromium like the rest.
-  test.use({
-    viewport: { width: 390, height: 844 },
-    deviceScaleFactor: 2,
-    isMobile: true,
-    hasTouch: true,
-    userAgent: devices["iPhone 13"].userAgent,
-  });
-
-  test("mobile", async ({ page }) => {
-    await open(page);
-    await listen(page);
-    await page.screenshot({ path: `${DOCS}mobile.png` });
-  });
-});
+}
 
 // The link preview on social sites and chat apps: the real dock, mid-sentence, beside the pitch.
 test("share image", async ({ page }) => {
