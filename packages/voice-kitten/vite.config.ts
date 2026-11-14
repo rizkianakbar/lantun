@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import { workerSource } from "./worker-source";
+import { workerSource } from "./worker-source.ts";
 
 // The worker is inlined into dist/index.js, so installing the package is all a bundler needs.
 export default defineConfig({

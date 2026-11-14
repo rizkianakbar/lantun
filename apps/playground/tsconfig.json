@@ -1,5 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "types": ["node", "vite/client"] },
+  "compilerOptions": { "types": ["node", "vite/client"], "noEmit": true, "allowImportingTsExtensions": true },
   "include": ["src", "e2e", "fixtures.ts", "vite.config.ts", "playwright.config.ts"]
 }
