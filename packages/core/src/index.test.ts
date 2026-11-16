@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { destroy, init, isInitialized } from "./index";
+import { destroy, init, isInitialized, on, play } from "./index";
 
 afterEach(() => {
   destroy();
@@ -39,6 +39,19 @@ describe("destroy()", () => {
     expect(document.querySelector("#lantun-ax, #lantun-highlight")).toBeNull();
     expect(Array.from(document.documentElement.classList).filter((c) => c.startsWith("ax-"))).toEqual([]);
     localStorage.clear();
+  });
+});
+
+describe("on()", () => {
+  it("keeps listeners across destroy() and init(), as a React re-init does", () => {
+    const handler = vi.fn();
+    on("error", handler);
+    init({ features: { tts: true, a11y: false } });
+    destroy();
+    init({ features: { tts: true, a11y: false } });
+    // jsdom has no speechSynthesis, so play() reports "unsupported".
+    play();
+    expect(handler).toHaveBeenCalledWith(expect.objectContaining({ code: "unsupported" }));
   });
 });
 

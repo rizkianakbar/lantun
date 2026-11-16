@@ -78,7 +78,6 @@ export const init = guard("init", function init(options?: ReaderOptions) {
 
 export const destroy = guard("destroy", function destroy() {
   teardown();
-  emitter.clear();
 });
 
 export const play = guard("play", function play() {

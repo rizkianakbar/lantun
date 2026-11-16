@@ -10,6 +10,7 @@ class FakeHighlight extends Set<Range> {
 const OPTS = {
   color: [26, 115, 232] as [number, number, number],
   background: [255, 255, 255] as [number, number, number],
+  root: document.body,
   zIndex: 100,
   nonce: null,
 };
@@ -96,6 +97,32 @@ describe("overlay painter (no Highlight API)", () => {
     expect(document.body.innerHTML).toBe(before);
     p.destroy();
     expect(document.querySelector("lantun-overlay")).toBeNull();
+    delete (Range.prototype as Partial<Range>).getClientRects;
+  });
+
+  it("repaints when the article reflows under it", () => {
+    document.body.innerHTML = '<article><p id="a">Some text.</p></article>';
+    let reflow = () => {};
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(cb: () => void) {
+          reflow = cb;
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    let top = 20;
+    Range.prototype.getClientRects = () => [{ left: 10, top, width: 50, height: 16 }] as unknown as DOMRectList;
+    const p = createPainter(document, window, OPTS);
+    p.sentence(rangeOver(document.getElementById("a") as Element));
+    top = 60;
+    reflow();
+    const box = document.querySelector("lantun-overlay")?.shadowRoot?.querySelector<HTMLElement>("div.s");
+    expect(box?.style.top).toBe(`${60 + window.scrollY}px`);
+    p.destroy();
+    vi.unstubAllGlobals();
     delete (Range.prototype as Partial<Range>).getClientRects;
   });
 });

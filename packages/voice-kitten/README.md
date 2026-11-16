@@ -6,7 +6,7 @@ Browser voices differ by device, and many sound robotic. This add-on gives every
 
 **[Hear them in the live demo →](https://lantun.rzknkbr.xyz)** Open an English article, press play, and pick a voice from the voice menu.
 
-<img src="https://raw.githubusercontent.com/rizkianakbar/lantun/v0.1.2/docs/screenshots/voice-dark.png" alt="The Lantun voice picker with lifelike and built-in voices">
+<img src="https://raw.githubusercontent.com/rizkianakbar/lantun/v0.1.3/docs/screenshots/voice-dark.png" alt="The Lantun voice picker with lifelike and built-in voices">
 
 ## Install
 

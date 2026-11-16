@@ -91,7 +91,10 @@ function createOverlayPainter(doc: Document, win: Window, o: PainterOptions): Pa
     shadow.append(boxes);
   }
 
+  const reflow = typeof ResizeObserver === "function" ? new ResizeObserver(paint) : null;
+
   win.addEventListener("resize", paint);
+  reflow?.observe(o.root);
 
   return {
     sentence(range) {
@@ -106,6 +109,7 @@ function createOverlayPainter(doc: Document, win: Window, o: PainterOptions): Pa
 
     destroy() {
       win.removeEventListener("resize", paint);
+      reflow?.disconnect();
       host.remove();
     },
   };
@@ -120,6 +124,7 @@ export function createReadingView(o: ReadingViewOptions): ReadingView {
   const painter = createPainter(o.doc, o.win, {
     color: resolveColor(o.color, o.doc) ?? DEFAULT_RGB,
     background: backgroundOf(o.root),
+    root: o.root,
     zIndex: o.zIndex,
     nonce: o.nonce,
   });

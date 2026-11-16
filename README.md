@@ -106,7 +106,7 @@ Good to know:
 
 - **Skip a part of the page:** add `data-reader-skip` to any element.
 - **Strict Content-Security-Policy:** add your `nonce` to the script tag; Lantun reuses it for its styles.
-- **Versions:** `lantun@0.1` gets bug fixes automatically, never breaking changes. Use `lantun@0.1.2` to pin an exact version.
+- **Versions:** `lantun@0.1` gets bug fixes automatically, never breaking changes. Use `lantun@0.1.3` to pin an exact version.
 
 ### JavaScript app
 

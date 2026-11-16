@@ -201,7 +201,7 @@ async function pump(): Promise<void> {
   }
 }
 
-function onMessage(e: MessageEvent<ToWorker>): void {
+export function onMessage(e: MessageEvent<ToWorker>): void {
   const msg = e.data;
 
   switch (msg.type) {

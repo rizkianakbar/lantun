@@ -5,7 +5,6 @@ type Handler = (payload: unknown) => void;
 export interface Emitter<E extends string> {
   on(event: E, handler: Handler): () => void;
   emit(event: E, payload?: unknown): void;
-  clear(): void;
 }
 
 export function createEmitter<E extends string>(): Emitter<E> {
@@ -34,10 +33,6 @@ export function createEmitter<E extends string>(): Emitter<E> {
           warn(`'${event}' listener threw:`, err);
         }
       }
-    },
-
-    clear() {
-      handlers.clear();
     },
   };
 }

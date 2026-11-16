@@ -38,7 +38,7 @@ export const PACE: Record<KittenVoiceName, number> = {
   Leo: 0.98,
 };
 
-const HF = "https://huggingface.co/KittenML/kitten-tts-nano-0.8-int8/resolve/main";
+const HF = "https://huggingface.co/KittenML/kitten-tts-nano-0.8-int8/resolve/84781d74e29ee25217551556398b42f80593a813";
 const ORT = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.24.2/dist";
 
 export const DEFAULT_SOURCES: Sources = {

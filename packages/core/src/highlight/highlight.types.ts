@@ -22,6 +22,8 @@ export interface PainterOptions {
   color: RGB;
   // Background behind the article; a dark page needs a stronger sentence tint to stay visible.
   background: RGB;
+  // The article: its reflows (a11y text size, fonts) move the text under fixed overlay boxes.
+  root: Element;
   zIndex: number;
   nonce: string | null;
 }
